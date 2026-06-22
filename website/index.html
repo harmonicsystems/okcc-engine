@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OK Code Camp · Harmonic Systems</title>
+<meta name="description" content="A making workshop where kids design a game by hand and leave with an interactive souvenir of their own creativity. In partnership with Super-Stories.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --machine:#17181b;
+    --machine-2:#3a3d44;
+    --box:#c9ccd2;
+    --panel:#f2f3f5;
+    --ink:#1d2024;
+    --muted:#6b7077;
+    --teal:#0fa3a3;
+    --teal-deep:#0b7d7d;
+    --line:#e2e4e8;
+    --display:'Space Grotesk',system-ui,sans-serif;
+    --body:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
+    --mono:ui-monospace,'SF Mono',Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;font-family:var(--body);color:var(--ink);background:#fff;line-height:1.55}
+  .wrap{max-width:1040px;margin:0 auto;padding:0 clamp(18px,4vw,40px)}
+  a{color:var(--teal-deep)}
+
+  /* nav */
+  nav{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid var(--line)}
+  .brand{font-family:var(--display);font-weight:700;font-size:17px;letter-spacing:-.01em}
+  .brand small{font-family:var(--mono);font-weight:400;font-size:11px;color:var(--muted);letter-spacing:.04em;display:block}
+  .partner{font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+  /* hero */
+  .hero{padding:clamp(44px,8vw,88px) 0 clamp(28px,5vw,48px)}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal-deep);margin:0 0 14px}
+  h1{font-family:var(--display);font-weight:700;font-size:clamp(34px,7vw,64px);line-height:1.0;letter-spacing:-.025em;margin:0 0 18px;max-width:16ch}
+  .lede{font-size:clamp(16px,2.2vw,20px);color:var(--muted);max-width:54ch;margin:0}
+  .lede b{color:var(--ink);font-weight:600}
+  .cue{display:inline-flex;align-items:center;gap:8px;margin-top:26px;font-family:var(--mono);font-size:13px;color:var(--teal-deep);text-decoration:none}
+  .cue span{font-size:18px}
+
+  /* demo — the machine */
+  .demo{background:var(--machine);color:#e8eaed;padding:clamp(40px,7vw,76px) 0;margin-top:24px}
+  .demo h2{font-family:var(--display);font-size:clamp(22px,3.2vw,32px);margin:0 0 8px;color:#fff;letter-spacing:-.01em}
+  .demo .say{color:#9a9ea7;max-width:52ch;margin:0 0 28px;font-size:15.5px}
+  .demo .say b{color:#e8eaed;font-weight:600}
+  .stage{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(250px,1fr);gap:18px;align-items:start}
+  @media (max-width:780px){.stage{grid-template-columns:1fr}}
+  .screen{background:#000;border-radius:14px;overflow:hidden;border:1px solid #000}
+  canvas{display:block;width:100%;height:auto;background:var(--machine);touch-action:none}
+  .screen .hint{font-family:var(--mono);font-size:12px;color:#7e828b;padding:9px 14px;border-top:1px solid #26282d;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .screen .hint b{color:#c9ccd2;font-weight:500}
+
+  .panel{background:#fff;color:var(--ink);border-radius:14px;padding:18px}
+  .panel h3{font-family:var(--display);font-size:15px;margin:0 0 2px}
+  .panel .sub{font-size:12.5px;color:var(--muted);margin:0 0 16px}
+  .dial{margin:0 0 15px}
+  .dial .top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px}
+  .dial label{font-size:14px;font-weight:600}
+  .dial .var{font-family:var(--mono);font-size:11px;color:var(--muted)}
+  .dial .val{font-family:var(--mono);font-size:19px;font-weight:500;color:var(--teal-deep);min-width:3ch;text-align:right}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:6px;border-radius:99px;background:linear-gradient(var(--teal),var(--teal)) no-repeat,#e7e9ed;background-size:var(--fill,50%) 100%;cursor:pointer;margin:6px 0 0}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--teal);box-shadow:0 2px 6px rgba(0,0,0,.18)}
+  input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:#fff;border:3px solid var(--teal);box-shadow:0 2px 6px rgba(0,0,0,.18)}
+  input[type=range]:focus-visible{outline:3px solid var(--teal-deep);outline-offset:3px}
+  .skin{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
+  .skinbtn{width:100%;font-family:var(--body);font-size:14px;font-weight:700;color:#fff;background:var(--teal);border:none;border-radius:10px;padding:13px;cursor:pointer}
+  .skinbtn:hover{background:var(--teal-deep)}
+  .skinbtn:focus-visible{outline:3px solid #fff;outline-offset:2px}
+  .skinnote{font-size:12.5px;color:var(--muted);margin:10px 2px 0;min-height:2.6em}
+  .score{font-family:var(--mono);font-size:12px;color:var(--muted);margin-top:14px;text-align:right}
+  .score b{font-size:18px;color:var(--ink)}
+
+  /* content sections */
+  section.block{padding:clamp(44px,7vw,80px) 0}
+  section.block.alt{background:var(--panel)}
+  h2.head{font-family:var(--display);font-size:clamp(24px,3.6vw,36px);letter-spacing:-.015em;margin:0 0 28px;max-width:20ch}
+  .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  @media (max-width:720px){.steps{grid-template-columns:1fr}}
+  .step .n{font-family:var(--mono);font-size:13px;color:var(--teal-deep);letter-spacing:.08em}
+  .step h4{font-family:var(--display);font-size:18px;margin:8px 0 6px}
+  .step p{margin:0;color:var(--muted);font-size:14.5px}
+  .lead-para{font-size:clamp(17px,2.4vw,21px);max-width:42ch;line-height:1.45;margin:0}
+  .lead-para b{color:var(--teal-deep)}
+  .facts{display:flex;flex-wrap:wrap;gap:10px 28px;margin-top:26px;font-size:14.5px}
+  .facts div{display:flex;flex-direction:column}
+  .facts .k{font-family:var(--mono);font-size:11px;letter-spacing:.06em;color:var(--muted);text-transform:uppercase}
+  .facts .v{font-weight:600}
+
+  .parents{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center}
+  @media (max-width:720px){.parents{grid-template-columns:1fr}}
+  .parents p{color:var(--muted);margin:0 0 16px;max-width:46ch}
+  .parents b{color:var(--ink)}
+  .mail{display:inline-block;font-weight:700;color:#fff;background:var(--ink);border-radius:10px;padding:13px 22px;text-decoration:none}
+  .mail:hover{background:#000}
+
+  footer{background:var(--machine);color:#9a9ea7;padding:40px 0;font-size:13.5px}
+  footer .row{display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:16px}
+  footer .brand{color:#fff}
+  footer .kicker{font-family:var(--display);color:#e8eaed;font-size:16px}
+
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <nav>
+    <div class="brand">Harmonic Systems<small>Accessible Information</small></div>
+    <div class="partner">a workshop with Super-Stories</div>
+  </nav>
+
+  <section class="hero">
+    <p class="eyebrow">OK Code Camp</p>
+    <h1>Kids draw the characters. The game brings them to life.</h1>
+    <p class="lede">A hands-on workshop where children design a game with paper and markers — and leave with an <b>interactive souvenir</b> of their own creativity. Don't take our word for it. Play the demo, then make it yours.</p>
+    <a class="cue" href="#try">try it yourself <span>↓</span></a>
+  </section>
+</div>
+
+<!-- THE MACHINE -->
+<div class="demo" id="try">
+  <div class="wrap">
+    <h2>This is the skeleton</h2>
+    <p class="say">Every mechanic is here — but no identity. Move with the arrow keys, collect the dots. Then drag a dial and watch a <b>number</b> change how it moves. Same gray game, every time… until you press the button.</p>
+    <div class="stage">
+      <div class="screen">
+        <canvas id="game" width="660" height="380"></canvas>
+        <div class="hint">
+          <span><b>←</b> <b>→</b> move &nbsp; <b>↑</b> / <b>space</b> jump</span>
+          <span>collect the dots</span>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>Character variables</h3>
+        <p class="sub">Drag a dial. The game changes instantly.</p>
+        <div class="dial"><div class="top"><label for="speed">Speed <span class="var">speed</span></label><span class="val" id="speed-v">5</span></div><input type="range" id="speed" min="2" max="10" step="1" value="5"></div>
+        <div class="dial"><div class="top"><label for="jump">Jump <span class="var">jumpHeight</span></label><span class="val" id="jump-v">16</span></div><input type="range" id="jump" min="8" max="24" step="1" value="16"></div>
+        <div class="dial"><div class="top"><label for="grav">Floatiness <span class="var">gravity</span></label><span class="val" id="grav-v">0.8</span></div><input type="range" id="grav" min="0.3" max="1.4" step="0.1" value="0.8"></div>
+        <div class="dial"><div class="top"><label for="size">Size <span class="var">size</span></label><span class="val" id="size-v">44</span></div><input type="range" id="size" min="22" max="78" step="2" value="44"></div>
+        <div class="skin">
+          <button class="skinbtn" id="skinBtn">Make it theirs →</button>
+          <p class="skinnote" id="skinNote">Right now it's an anonymous gray box. A drawing is the only thing missing.</p>
+        </div>
+        <p class="score">score &nbsp;<b id="score">0</b></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="block">
+  <div class="wrap">
+    <h2 class="head">Three sessions, one shared game</h2>
+    <div class="steps">
+      <div class="step"><div class="n">01 / design</div><h4>Imagine it</h4><p>Each child designs a character, an obstacle, and a piece of the world — all on paper. No screens, no code. Just markers and ideas.</p></div>
+      <div class="step"><div class="n">02 / build &amp; playtest</div><h4>Bring it alive</h4><p>Their drawings become the skin of one game everyone shares. They play it, test it, and tune the numbers until it feels right.</p></div>
+      <div class="step"><div class="n">03 / polish &amp; publish</div><h4>Keep it forever</h4><p>Final touches, then the game goes live at a real web link they can send to anyone. A souvenir of the day they made something real.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- PHILOSOPHY -->
+<section class="block alt">
+  <div class="wrap">
+    <p class="lead-para">The child brings the imagination; the machine just runs it. Kids learn that a few numbers shape how a character behaves — so the computer is something they <b>understand and command</b>, not a mystery that belongs to grown-ups. The hand leads. The machine serves.</p>
+    <div class="facts">
+      <div><span class="k">Who</span><span class="v">Up to 4 students</span></div>
+      <div><span class="k">Where</span><span class="v">Super-Stories Makers Space</span></div>
+      <div><span class="k">Provided</span><span class="v">All materials &amp; machinery</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PARENTS -->
+<section class="block">
+  <div class="wrap parents">
+    <div>
+      <h2 class="head" style="margin-bottom:18px">For parents</h2>
+      <p>Your child leaves with a <b>real game</b>, published to a link you can keep, share, and replay. You're welcome to follow along — and to sit in and make one alongside them.</p>
+      <p>Want to be part of the first workshop? Reach out and we'll save a seat.</p>
+    </div>
+    <div>
+      <a class="mail" href="mailto:hello@harmonic-systems.org?subject=OK%20Code%20Camp">Save a seat →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap row">
+    <div>
+      <div class="brand" style="font-family:var(--display);font-weight:700;font-size:16px">Harmonic Systems</div>
+      <div>Accessible Information · with Super-Stories</div>
+    </div>
+    <div class="kicker">The hand leads; the machine serves.</div>
+  </div>
+</footer>
+
+<script>
+// =====================================================================
+//  OK CODE CAMP — interactive demo (skeleton + skin toggle)
+// =====================================================================
+const vars = { speed: 5, jumpHeight: 16, gravity: 0.8, size: 44 };
+
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+const W = canvas.width, H = canvas.height;
+
+// The "skin": a stand-in hand-drawn robot. Swap this for a real kid's
+// drawing by pointing it at an image file instead.
+const robotSVG = `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <g fill="none" stroke="#0b3b3b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
+    <line x1="50" y1="16" x2="50" y2="6"/>
+    <circle cx="50" cy="5" r="3.5" fill="#f5a623" stroke="none"/>
+    <rect x="22" y="18" width="56" height="46" rx="9" fill="#12b3ab"/>
+    <rect x="34" y="30" width="12" height="14" rx="3" fill="#fff"/>
+    <rect x="54" y="30" width="12" height="14" rx="3" fill="#fff"/>
+    <circle cx="40" cy="38" r="3" fill="#0b3b3b" stroke="none"/>
+    <circle cx="60" cy="38" r="3" fill="#0b3b3b" stroke="none"/>
+    <path d="M38 54 Q50 60 62 54" />
+    <rect x="30" y="66" width="40" height="22" rx="6" fill="#0f8f88"/>
+    <line x1="22" y1="40" x2="12" y2="48"/>
+    <line x1="78" y1="40" x2="88" y2="48"/>
+    <line x1="40" y1="88" x2="40" y2="96"/>
+    <line x1="60" y1="88" x2="60" y2="96"/>
+  </g>
+</svg>`;
+const sprite = new Image();
+let spriteReady = false, skinned = false;
+sprite.onload = () => { spriteReady = true; };
+sprite.src = "data:image/svg+xml;utf8," + encodeURIComponent(robotSVG);
+
+const player = { x: 60, y: 0, w: vars.size, h: vars.size, vx: 0, vy: 0, grounded: false };
+const platforms = [
+  { x: 0, y: H - 24, w: W, h: 24 },
+  { x: 120, y: 280, w: 150, h: 14 },
+  { x: 360, y: 210, w: 150, h: 14 },
+  { x: 520, y: 300, w: 120, h: 14 }
+];
+let dots = [];
+function spawnDot(){ dots.push({ x: 40 + Math.random()*(W-80), y: 60 + Math.random()*(H-160), r: 7, t: Math.random()*6.28 }); }
+for (let i=0;i<5;i++) spawnDot();
+let score = 0;
+const scoreEl = document.getElementById("score");
+
+const keys = {};
+addEventListener("keydown", e => {
+  if (["ArrowLeft","ArrowRight","ArrowUp"," "].includes(e.key)) {
+    // only block scroll when the demo is in view-ish (always fine here)
+    e.preventDefault();
+  }
+  keys[e.key] = true;
+  if (e.key === "ArrowUp" || e.key === " " || e.key === "w") jump();
+  resumeAudio();
+});
+addEventListener("keyup", e => { keys[e.key] = false; });
+function jump(){ if (player.grounded){ player.vy = -vars.jumpHeight; player.grounded = false; blip(420,0.06);} }
+
+let actx = null;
+function resumeAudio(){ if(!actx){ try{ actx = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } }
+function blip(freq,dur){ if(!actx) return; const o=actx.createOscillator(),g=actx.createGain(); o.frequency.value=freq;o.type="square";g.gain.value=0.04;o.connect(g);g.connect(actx.destination);o.start();g.gain.exponentialRampToValueAtTime(0.0001,actx.currentTime+dur);o.stop(actx.currentTime+dur);}
+
+function update(){
+  player.w = vars.size; player.h = vars.size;
+  if (keys["ArrowLeft"]||keys["a"]) player.vx = -vars.speed;
+  else if (keys["ArrowRight"]||keys["d"]) player.vx = vars.speed;
+  else player.vx = 0;
+  player.vy += vars.gravity;
+  player.x += player.vx; player.y += player.vy;
+  if (player.x < 0) player.x = 0;
+  if (player.x + player.w > W) player.x = W - player.w;
+  player.grounded = false;
+  for (const p of platforms){
+    const overX = player.x + player.w > p.x && player.x < p.x + p.w;
+    const feet = player.y + player.h;
+    if (overX && player.vy >= 0 && feet >= p.y && feet <= p.y + p.h + 18){
+      player.y = p.y - player.h; player.vy = 0; player.grounded = true;
+    }
+  }
+  if (player.y > H + 200){ player.x = 60; player.y = 0; player.vy = 0; }
+  const cx = player.x + player.w/2, cy = player.y + player.h/2;
+  for (let i = dots.length-1; i>=0; i--){
+    const d = dots[i];
+    if (Math.hypot(cx-d.x, cy-d.y) < player.w/2 + d.r){
+      dots.splice(i,1); score++; scoreEl.textContent = score; blip(720,0.08); spawnDot();
+    }
+  }
+}
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle = "#1f2125"; ctx.lineWidth = 1;
+  for (let x=0;x<W;x+=44){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+  for (let y=0;y<H;y+=44){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  ctx.fillStyle = "#3a3d44";
+  for (const p of platforms) ctx.fillRect(p.x,p.y,p.w,p.h);
+  for (const d of dots){
+    d.t += 0.08; const pulse = 1 + Math.sin(d.t)*0.12;
+    ctx.beginPath(); ctx.arc(d.x,d.y,d.r*pulse,0,6.28); ctx.fillStyle="#8b8f98"; ctx.fill();
+    ctx.lineWidth=2; ctx.strokeStyle="#c9ccd2"; ctx.stroke();
+  }
+  if (skinned && spriteReady){
+    ctx.drawImage(sprite, player.x, player.y, player.w, player.h);
+  } else {
+    ctx.fillStyle = "#c9ccd2"; roundRect(player.x,player.y,player.w,player.h,6); ctx.fill();
+    ctx.fillStyle = "#8b8f98"; const e = player.w*0.16;
+    ctx.fillRect(player.x+player.w*0.3-e/2, player.y+player.h*0.34, e, e);
+    ctx.fillRect(player.x+player.w*0.7-e/2, player.y+player.h*0.34, e, e);
+  }
+}
+function roundRect(x,y,w,h,r){ ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath(); }
+function loop(){ update(); draw(); requestAnimationFrame(loop); }
+loop();
+
+// dials
+function bind(id,key,valId,decimals){
+  const input = document.getElementById(id), out = document.getElementById(valId);
+  const render = () => {
+    const v = parseFloat(input.value); vars[key] = v;
+    out.textContent = decimals ? v.toFixed(decimals) : v;
+    input.style.setProperty("--fill", ((v-input.min)/(input.max-input.min)*100)+"%");
+  };
+  input.addEventListener("input", render); render(); return input;
+}
+const ctrls = [
+  bind("speed","speed","speed-v",0),
+  bind("jump","jumpHeight","jump-v",0),
+  bind("grav","gravity","grav-v",1),
+  bind("size","size","size-v",0)
+];
+
+// skin toggle — the McLuhan moment
+const skinBtn = document.getElementById("skinBtn");
+const skinNote = document.getElementById("skinNote");
+skinBtn.addEventListener("click", () => {
+  skinned = !skinned;
+  if (skinned){
+    skinBtn.textContent = "Back to the skeleton";
+    skinNote.innerHTML = "Same speed, same jump, same game — the <b>only</b> thing that changed is the drawing. That's a child's imagination, running on the machine underneath.";
+  } else {
+    skinBtn.textContent = "Make it theirs →";
+    skinNote.textContent = "Right now it's an anonymous gray box. A drawing is the only thing missing.";
+  }
+});
+</script>
+</body>
+</html>

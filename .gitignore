@@ -1,0 +1,8 @@
+# dependencies & build output (engine lives in game-engine/)
+node_modules/
+dist/
+.vite/
+
+# os / editor cruft
+.DS_Store
+*.local
