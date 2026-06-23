@@ -18,7 +18,7 @@ export const FEEL = {
   coyoteMs: 90, // grace window to still jump just after leaving a ledge
   bufferMs: 110, // jump pressed slightly early still registers
   maxJumps: 2, // double jump
-  cutVelocity: 200, // release jump early -> short hop (variable jump height)
+  cutVelocity: 330, // release jump early -> short hop (variable jump height); a quick tap clears ~42px (was ~22px) — mobile-friendly
   bounce: 690, // bounce-pad / trampoline launch
 
   // Lower-level shaping of the *same* feel (still constitution #1, just not on

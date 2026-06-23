@@ -353,8 +353,18 @@ export class GameScene extends Phaser.Scene {
   //  Touch controls (on-screen; also help mouse users)
   // ------------------------------------------------------------------
   private buildTouchControls(): void {
+    // Only on touch devices — on desktop the keyboard is primary and the buttons
+    // would just be clutter. Inclusive detection: show whenever any touch signal
+    // exists, hide only when confidently a fine-pointer (mouse) device.
+    const hasTouch =
+      typeof window !== 'undefined' &&
+      ((window.matchMedia && window.matchMedia('(pointer: coarse)').matches) ||
+        'ontouchstart' in window ||
+        (typeof navigator !== 'undefined' && navigator.maxTouchPoints > 0));
+    if (!hasTouch) return;
+
     const { width, height } = this.scale;
-    const R = 60; // big, thumb-friendly buttons (helps touch; also fine for mouse)
+    const R = 60; // big, thumb-friendly buttons
     const margin = 28;
     const mk = (x: number, y: number, label: string): Phaser.GameObjects.Arc => {
       const btn = this.add
@@ -376,14 +386,15 @@ export class GameScene extends Phaser.Scene {
     const right = mk(margin + R * 3 + 20, y, '›'); // ~20px gap from the left button
     const jump = mk(width - margin - R, y, '▲');
 
-    const bind = (
-      btn: Phaser.GameObjects.Arc,
-      set: (v: boolean) => void,
-    ): void => {
-      btn.on('pointerdown', () => set(true));
-      btn.on('pointerup', () => set(false));
-      btn.on('pointerout', () => set(false));
-      btn.on('pointerupoutside', () => set(false));
+    const bind = (btn: Phaser.GameObjects.Arc, set: (v: boolean) => void): void => {
+      const press = (on: boolean): void => {
+        set(on);
+        btn.setFillStyle(THEME.box, on ? 0.34 : 0.16); // brighten on touch — clear feedback
+      };
+      btn.on('pointerdown', () => press(true));
+      btn.on('pointerup', () => press(false));
+      btn.on('pointerout', () => press(false));
+      btn.on('pointerupoutside', () => press(false));
     };
     bind(left, (v) => this.controls.setTouchLeft(v));
     bind(right, (v) => this.controls.setTouchRight(v));

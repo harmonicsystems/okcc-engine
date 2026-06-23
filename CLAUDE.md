@@ -109,7 +109,7 @@ export const FEEL = {
   coyoteMs: 90,       // grace window to still jump just after leaving a ledge (forgiveness)
   bufferMs: 110,      // jump pressed slightly early still registers
   maxJumps: 2,        // double jump
-  cutVelocity: 200,   // release jump early → short hop (variable jump height)
+  cutVelocity: 330,   // release jump early → short hop (variable jump height); a tap clears ~42px (was ~22px)
   bounce: 690,        // bounce-pad / trampoline launch
   accel: 2200,        // ground acceleration toward top speed  ┐ lower-level shaping of the
   friction: 2000,     // deceleration when there's no input    ┘ same feel — off the worksheet
