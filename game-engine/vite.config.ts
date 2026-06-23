@@ -14,6 +14,15 @@ export default defineConfig({
     // Phaser is one big dependency; a single ~1.5MB chunk is expected and fine
     // for a static game. Raise the warning ceiling so CI logs stay clean.
     chunkSizeWarningLimit: 1600,
+    // Two entries: the game (index.html) and the facilitator's printable
+    // worksheet generator (worksheets.html). They share nothing heavy — the
+    // worksheets page is Phaser-free (pure DOM, reads only config/*).
+    rollupOptions: {
+      input: {
+        main: 'index.html',
+        worksheets: 'worksheets.html',
+      },
+    },
   },
   server: {
     host: true,

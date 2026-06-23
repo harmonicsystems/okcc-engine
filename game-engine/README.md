@@ -13,7 +13,8 @@ placeholders** — real art is pure drop-in.
 ```
 npm install
 npm run dev        # local dev server (hot reload)
-npm run build      # static production build -> dist/
+npm run worksheets # the printable worksheet generator (worksheets.html, a 2nd entry)
+npm run build      # static production build -> dist/ (both the game + worksheets)
 npm run preview    # serve the production build
 npm run typecheck  # tsc --noEmit
 ```

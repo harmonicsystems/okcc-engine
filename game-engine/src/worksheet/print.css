@@ -1,0 +1,262 @@
+/* =====================================================================
+   Worksheet styles — screen preview + print. Letter portrait, generous
+   draw boxes, black corner registration ticks (the crop fiducials), and a
+   printed manifest path under each. On-brand chrome; never Fraunces.
+   ===================================================================== */
+
+:root {
+  --ink: #1d2024;
+  --muted: #6b7077;
+  --line: #d7d9dd;
+  --paper: #ffffff;
+  --bg: #e7e8ea;
+  --teal: #0b7d7d;
+}
+* {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+}
+body {
+  font-family: 'Space Grotesk', system-ui, -apple-system, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+}
+
+/* ---- toolbar (screen only) ---- */
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 12px 22px;
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+}
+.toolbar .brand {
+  font-weight: 700;
+  font-size: 16px;
+}
+.toolbar .brand small {
+  font-weight: 400;
+  color: var(--muted);
+  font-size: 12px;
+  margin-left: 4px;
+}
+.tnav {
+  display: flex;
+  gap: 16px;
+}
+.tnav a {
+  color: var(--teal);
+  text-decoration: none;
+  font-size: 14px;
+}
+.tnav a:hover {
+  text-decoration: underline;
+}
+.print-btn {
+  margin-left: auto;
+  font: inherit;
+  font-weight: 600;
+  font-size: 14px;
+  color: #fff;
+  background: var(--teal);
+  border: 0;
+  border-radius: 8px;
+  padding: 9px 16px;
+  cursor: pointer;
+}
+.print-btn:hover {
+  background: #0a6a6a;
+}
+
+/* ---- sheets ---- */
+.sheets {
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+.sheet {
+  width: 216mm; /* US Letter */
+  min-height: 279mm;
+  background: var(--paper);
+  padding: 16mm;
+  box-shadow: 0 2px 14px rgba(0, 0, 0, 0.12);
+}
+.sheet-head h2 {
+  margin: 0 0 4px;
+  font-size: 24px;
+}
+.sheet-head .dim {
+  color: var(--muted);
+  font-weight: 400;
+  font-size: 15px;
+}
+.sheet-head p {
+  margin: 0 0 16px;
+  color: var(--muted);
+  font-size: 14px;
+  max-width: 64ch;
+}
+
+/* ---- tile grid ---- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10mm 14mm;
+}
+.tile {
+  break-inside: avoid;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-start;
+}
+.tile-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.swatch {
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.18);
+}
+.tile-title {
+  font-weight: 600;
+  font-size: 15px;
+}
+.tile-prompt {
+  margin: 0;
+  font-size: 12.5px;
+  color: var(--muted);
+  min-height: 2.6em;
+}
+.tile-path {
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ---- the crop frame ---- */
+.frame {
+  position: relative;
+  border: 1px solid var(--line);
+  background: #fff;
+}
+.frame .guide {
+  position: absolute;
+  inset: 9%;
+  opacity: 0.55;
+  pointer-events: none;
+}
+.frame .guide svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+/* L-shaped corner registration ticks — the crop fiducials */
+.tick {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+}
+.tick.tl {
+  top: -1px;
+  left: -1px;
+  border-top: 2px solid #111;
+  border-left: 2px solid #111;
+}
+.tick.tr {
+  top: -1px;
+  right: -1px;
+  border-top: 2px solid #111;
+  border-right: 2px solid #111;
+}
+.tick.bl {
+  bottom: -1px;
+  left: -1px;
+  border-bottom: 2px solid #111;
+  border-left: 2px solid #111;
+}
+.tick.br {
+  bottom: -1px;
+  right: -1px;
+  border-bottom: 2px solid #111;
+  border-right: 2px solid #111;
+}
+
+/* ---- character spread ---- */
+.color-key {
+  display: flex;
+  gap: 20px;
+  margin: 2px 0 16px;
+  flex-wrap: wrap;
+}
+.color-key .key {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.color-key .dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid var(--ink);
+}
+.pose-row {
+  display: flex;
+  gap: 8mm;
+  flex-wrap: wrap;
+}
+.pose-row .tile {
+  align-items: center;
+}
+.pose-row .tile-title {
+  text-transform: capitalize;
+  font-size: 13px;
+  font-weight: 500;
+}
+.sheet-path {
+  margin-top: 12mm;
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ---- print ---- */
+@media print {
+  body {
+    background: #fff;
+  }
+  .toolbar {
+    display: none;
+  }
+  .sheets {
+    padding: 0;
+    gap: 0;
+  }
+  .sheet {
+    width: auto;
+    min-height: auto;
+    padding: 0;
+    box-shadow: none;
+  }
+  .sheets > .sheet + .sheet {
+    break-before: page;
+  }
+}
+@page {
+  size: letter portrait;
+  margin: 14mm;
+}

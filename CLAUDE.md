@@ -178,6 +178,14 @@ fall/hurt with onion-skin guides + a color-key strip), and **level title cards**
 and illustrates a level's front door). Each carries registration ticks + a printed manifest
 path + a QR so a scanned stack sorts itself.
 
+> **Built so far** (`worksheets.html`, a Phaser-free second Vite entry reading `roles.ts` +
+> `characters.ts`): **object/platform tiles** (color-coded, kid prompts) and the **character
+> animation spread** (the five poses with onion-skin guides + colour key). Each box has the
+> aspect-accurate crop frame, L-corner registration ticks, and a printed manifest path
+> (`assets/objects/<role>.png`, `assets/characters/<char>.png`). Reusable pieces:
+> `worksheet/frame.ts` (the crop tile) + `worksheet/robot.ts` (pose guides). Still to do: scene
+> pages, title cards, QR codes, and the scan→manifest ingest.
+
 ### Ingest (`scripts/ingest.ts`, deferred)
 `scan → detect frame via registration ticks → crop → edge-flood alpha (preserve interior
 whites) → save to manifest path`. Three baked-in rules: edge-flood transparency (so white eyes
@@ -250,8 +258,9 @@ legible with motion minimized. PostFX is WebGL-only; guard it and degrade gracef
 **Stack:** Phaser `^3.80` · Vite `^5.4` · TypeScript `^5.6` · Node `>=20.17`. (Vite 5 is pinned
 deliberately: Vite 6 needs Node ≥20.19.) **Hand-authored** against Phaser 3 + Vite + TS — *not*
 scaffolded from a template. No bundler other than Vite. Deploy static to GitHub Pages (workflow
-live) or Cloudflare Pages. GitHub org: **harmonicsystems**. *The worksheet generator (a second
-Vite entry) is Phase 2 — not built yet.*
+live) or Cloudflare Pages. GitHub org: **harmonicsystems**. *The worksheet generator
+(`worksheets.html`, a second Vite entry) is live for object/platform tiles + the character
+animation spread; scene pages, title cards, QR, and the scan-ingest are next.*
 
 ```
 okcc-engine/                     # repo root
@@ -262,7 +271,7 @@ okcc-engine/                     # repo root
   demo/ skeleton-game.html        # the surviving single-file prototype (gray-box dial demo)
   website/ index.html             # marketing one-pager
   game-engine/                    # the playable engine — all build tooling lives here
-    index.html  package.json  tsconfig.json  vite.config.ts
+    index.html  worksheets.html   package.json  tsconfig.json  vite.config.ts
     public/ levels/ (Tiled .json per location)   # + assets/ for scanned drawings & audio
     src/
       main.ts                     # Phaser config + scene registration
@@ -274,16 +283,18 @@ okcc-engine/                     # repo root
         Collectible.ts Hazard.ts GroundPatroller.ts AirPatroller.ts BouncePad.ts Goal.ts
         Powerup.ts Parallax.ts placeholders.ts juice.ts registry.ts sfx.ts
       hud/Hud.ts
+      worksheet/ worksheet.ts frame.ts robot.ts print.css   # printable paper bridge (Phase 2)
 
 # Future (Phase 2/3, not yet in repo):
-#   game-engine/worksheets.html + src/worksheet/   (worksheet generator — a 2nd Vite entry)
-#   scripts/ingest.ts                              (scan → crop → manifest)
+#   src/worksheet/ scene pages + title cards + QR   (the other worksheet kinds)
+#   scripts/ingest.ts                               (scan → crop → manifest)
 ```
 
 ```
 cd game-engine
 npm install   npm run dev   npm run build   npm run preview   npm run typecheck
-# (npm run worksheets / npm run ingest are Phase 2 — not wired yet)
+npm run worksheets    # opens the printable worksheet generator (a 2nd Vite entry)
+# (the scan → manifest ingest is still Phase 2)
 ```
 
 **Git workflow**
@@ -310,9 +321,11 @@ Park** ships as one Tiled level, fully playable on placeholders, keyboard + touc
 parallax, juice, and WebAudio SFX. `roles.ts` drives the in-game placeholders (the worksheet
 half lands in Phase 2). Verified end-to-end in-browser; GitHub Pages deploy workflow wired.
 
-**Phase 2 — paper handshake.** Build the worksheet generator (object tiles, scene pages,
-character spread, title cards) from `roles.ts`. Prove one scanned drawing replaces its
-placeholder through `scripts/ingest.ts`.
+**Phase 2 — paper handshake. (in progress)** The worksheet generator is live for **object/
+platform tiles** + the **character animation spread** (`worksheets.html`, reading `roles.ts` +
+`characters.ts`; crop frames + registration ticks + printed manifest paths). Remaining: scene
+pages, title cards, QR codes, and proving one scanned drawing replaces its placeholder through
+`scripts/ingest.ts`.
 
 **Phase 3 — the full game. (in progress)** All five Kinderhook levels ship as Tiled files — the
 teaching curve, one mechanic each: Super Stories (carts) → Park (bounce) → Bike Path (dodge) →

@@ -6,6 +6,7 @@
   "description": "OK Code Camp — a kid-skinnable side-scrolling platformer engine (Harmonic Systems / Super-Stories).",
   "scripts": {
     "dev": "vite",
+    "worksheets": "vite --open /worksheets.html",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit"
