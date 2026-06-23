@@ -314,10 +314,12 @@ half lands in Phase 2). Verified end-to-end in-browser; GitHub Pages deploy work
 character spread, title cards) from `roles.ts`. Prove one scanned drawing replaces its
 placeholder through `scripts/ingest.ts`.
 
-**Phase 3 — the full game.** Remaining Kinderhook levels as Tiled files (the teaching curve)
-and secrets/optional depth. (Power-ups — speed + invincibility — already shipped, in The Park.)
-Audio is its own later workshop concept — design it deliberately (recording kids needs consent +
-Super-Stories coordination).
+**Phase 3 — the full game. (in progress)** All five Kinderhook levels ship as Tiled files — the
+teaching curve, one mechanic each: Super Stories (carts) → Park (bounce) → Bike Path (dodge) →
+Library (climb) → Garden (air). Power-ups (speed + invincibility) shipped in The Park. Remaining:
+secrets/deeper optional content, the kid-drawn title-card art, and per-level polish. Audio is its
+own later workshop concept — design it deliberately (recording kids needs consent + Super-Stories
+coordination).
 
 ---
 
