@@ -354,24 +354,27 @@ export class GameScene extends Phaser.Scene {
   // ------------------------------------------------------------------
   private buildTouchControls(): void {
     const { width, height } = this.scale;
+    const R = 60; // big, thumb-friendly buttons (helps touch; also fine for mouse)
+    const margin = 28;
     const mk = (x: number, y: number, label: string): Phaser.GameObjects.Arc => {
       const btn = this.add
-        .circle(x, y, 42, THEME.box, 0.12)
+        .circle(x, y, R, THEME.box, 0.16)
         .setScrollFactor(0)
         .setDepth(95)
-        .setStrokeStyle(2, THEME.box, 0.25)
+        .setStrokeStyle(3, THEME.box, 0.35)
         .setInteractive();
       this.add
-        .text(x, y, label, { fontFamily: FONT.display, fontSize: '24px', color: css(THEME.box) })
+        .text(x, y, label, { fontFamily: FONT.display, fontSize: '36px', color: css(THEME.box) })
         .setOrigin(0.5)
         .setScrollFactor(0)
         .setDepth(96);
       return btn;
     };
 
-    const left = mk(64, height - 64, '‹');
-    const right = mk(168, height - 64, '›');
-    const jump = mk(width - 72, height - 72, '▲');
+    const y = height - margin - R;
+    const left = mk(margin + R, y, '‹');
+    const right = mk(margin + R * 3 + 20, y, '›'); // ~20px gap from the left button
+    const jump = mk(width - margin - R, y, '▲');
 
     const bind = (
       btn: Phaser.GameObjects.Arc,
