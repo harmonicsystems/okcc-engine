@@ -24,7 +24,18 @@ export interface LevelDef {
   teaches: string;
 }
 
+// The array order IS the difficulty curve / teaching loop (constitution #4):
+// each Kinderhook location introduces one mechanic, then the level develops it.
 export const LEVELS: LevelDef[] = [
+  {
+    key: 'superStories',
+    name: 'Super Stories',
+    map: 'levels/super-stories.json',
+    titleCard: null,
+    scene: { src: null },
+    motif: 0x6d5ac4, // art-studio purple
+    teaches: 'Move, jump, and ride a cart — the gentle warm-up.',
+  },
   {
     key: 'park',
     name: 'The Park',
@@ -34,11 +45,33 @@ export const LEVELS: LevelDef[] = [
     motif: 0x3f7d5a, // park green
     teaches: 'The bounce pad — springy, vertical play.',
   },
-  // The teaching curve continues here as each Tiled map lands (Phase 3):
-  //   superStories (art studio) — gentle intro: static, move, collectibles
-  //   bikePath     — fast ground patrollers; dodging
-  //   library      — stacked one-way shelves; climbing
-  //   garden       — air patrollers; air threats
+  {
+    key: 'bikePath',
+    name: 'The Bike Path',
+    map: 'levels/bike-path.json',
+    titleCard: null,
+    scene: { src: null },
+    motif: 0x9c7b3a, // orchard amber
+    teaches: 'Dodging — time your run past the bikes.',
+  },
+  {
+    key: 'library',
+    name: 'The Library',
+    map: 'levels/library.json',
+    titleCard: null,
+    scene: { src: null },
+    motif: 0x5a4a6b, // library dusk
+    teaches: 'Climbing — jump up through the shelves.',
+  },
+  {
+    key: 'garden',
+    name: 'The Garden',
+    map: 'levels/garden.json',
+    titleCard: null,
+    scene: { src: null },
+    motif: 0x6aa84f, // garden green
+    teaches: 'Air threats — mind the birds.',
+  },
 ];
 
 export function levelByKey(key: string): LevelDef | undefined {

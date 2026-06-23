@@ -1,0 +1,79 @@
+{
+  "compressionlevel": -1,
+  "infinite": false,
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "tiledversion": "1.10.2",
+  "type": "map",
+  "version": "1.10",
+  "width": 72,
+  "height": 18,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "nextlayerid": 7,
+  "nextobjectid": 75,
+  "tilesets": [],
+  "layers": [
+    {
+      "id": 1, "name": "Platforms", "type": "objectgroup", "visible": true, "opacity": 1, "x": 0, "y": 0, "draworder": "topdown",
+      "objects": [
+        { "id": 1, "name": "", "type": "static", "x": 0, "y": 544, "width": 1160, "height": 32, "rotation": 0, "visible": true },
+        { "id": 2, "name": "", "type": "static", "x": 1160, "y": 544, "width": 1144, "height": 32, "rotation": 0, "visible": true },
+        { "id": 3, "name": "", "type": "static", "x": 500, "y": 460, "width": 120, "height": 20, "rotation": 0, "visible": true },
+        { "id": 4, "name": "", "type": "static", "x": 1000, "y": 450, "width": 150, "height": 20, "rotation": 0, "visible": true },
+        { "id": 5, "name": "", "type": "static", "x": 1480, "y": 460, "width": 120, "height": 20, "rotation": 0, "visible": true }
+      ]
+    },
+    {
+      "id": 2, "name": "Collectibles", "type": "objectgroup", "visible": true, "opacity": 1, "x": 0, "y": 0, "draworder": "topdown",
+      "objects": [
+        { "id": 20, "name": "", "type": "", "x": 260, "y": 500, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true },
+        { "id": 21, "name": "", "type": "", "x": 560, "y": 425, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true },
+        { "id": 22, "name": "", "type": "", "x": 900, "y": 500, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true },
+        { "id": 23, "name": "", "type": "", "x": 1045, "y": 415, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true },
+        { "id": 24, "name": "", "type": "", "x": 1105, "y": 415, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true },
+        { "id": 25, "name": "", "type": "", "x": 1300, "y": 500, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true },
+        { "id": 26, "name": "", "type": "", "x": 1540, "y": 425, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true },
+        { "id": 27, "name": "", "type": "", "x": 1780, "y": 500, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true }
+      ]
+    },
+    {
+      "id": 3, "name": "Enemies", "type": "objectgroup", "visible": true, "opacity": 1, "x": 0, "y": 0, "draworder": "topdown",
+      "objects": [
+        { "id": 40, "name": "", "type": "groundPatroller", "x": 380, "y": 520, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true,
+          "properties": [ { "name": "range", "type": "int", "value": 220 }, { "name": "speed", "type": "int", "value": 110 } ] },
+        { "id": 41, "name": "", "type": "groundPatroller", "x": 700, "y": 520, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true,
+          "properties": [ { "name": "range", "type": "int", "value": 200 }, { "name": "speed", "type": "int", "value": 120 } ] },
+        { "id": 42, "name": "", "type": "groundPatroller", "x": 1180, "y": 520, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true,
+          "properties": [ { "name": "range", "type": "int", "value": 240 }, { "name": "speed", "type": "int", "value": 110 } ] },
+        { "id": 43, "name": "", "type": "groundPatroller", "x": 1560, "y": 520, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true,
+          "properties": [ { "name": "range", "type": "int", "value": 200 }, { "name": "speed", "type": "int", "value": 125 } ] },
+        { "id": 44, "name": "", "type": "groundPatroller", "x": 1960, "y": 520, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true,
+          "properties": [ { "name": "range", "type": "int", "value": 180 }, { "name": "speed", "type": "int", "value": 110 } ] }
+      ]
+    },
+    {
+      "id": 4, "name": "Goal", "type": "objectgroup", "visible": true, "opacity": 1, "x": 0, "y": 0, "draworder": "topdown",
+      "objects": [
+        { "id": 50, "name": "", "type": "goal", "x": 2230, "y": 500, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true }
+      ]
+    },
+    {
+      "id": 5, "name": "Spawn", "type": "objectgroup", "visible": true, "opacity": 1, "x": 0, "y": 0, "draworder": "topdown",
+      "objects": [
+        { "id": 60, "name": "", "type": "spawn", "x": 90, "y": 470, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true }
+      ]
+    },
+    {
+      "id": 6, "name": "Labels", "type": "objectgroup", "visible": true, "opacity": 1, "x": 0, "y": 0, "draworder": "topdown",
+      "objects": [
+        { "id": 70, "name": "", "type": "", "x": 90, "y": 452, "width": 260, "height": 20, "rotation": 0, "visible": true,
+          "text": { "text": "watch the bikes!  ↑ jump over", "wrap": true, "pixelsize": 13, "color": "#6b7077" } },
+        { "id": 71, "name": "", "type": "", "x": 980, "y": 412, "width": 190, "height": 20, "rotation": 0, "visible": true,
+          "text": { "text": "treasure up top", "wrap": true, "pixelsize": 13, "color": "#6b7077" } },
+        { "id": 72, "name": "", "type": "", "x": 2160, "y": 452, "width": 120, "height": 20, "rotation": 0, "visible": true,
+          "text": { "text": "finish!", "wrap": true, "pixelsize": 13, "color": "#6b7077" } }
+      ]
+    }
+  ]
+}

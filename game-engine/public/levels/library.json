@@ -1,0 +1,67 @@
+{
+  "compressionlevel": -1,
+  "infinite": false,
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "tiledversion": "1.10.2",
+  "type": "map",
+  "version": "1.10",
+  "width": 32,
+  "height": 24,
+  "tilewidth": 32,
+  "tileheight": 32,
+  "nextlayerid": 7,
+  "nextobjectid": 75,
+  "tilesets": [],
+  "layers": [
+    {
+      "id": 1, "name": "Platforms", "type": "objectgroup", "visible": true, "opacity": 1, "x": 0, "y": 0, "draworder": "topdown",
+      "objects": [
+        { "id": 1, "name": "", "type": "static", "x": 0, "y": 736, "width": 1024, "height": 32, "rotation": 0, "visible": true },
+        { "id": 2, "name": "", "type": "oneway", "x": 200, "y": 640, "width": 200, "height": 20, "rotation": 0, "visible": true },
+        { "id": 3, "name": "", "type": "oneway", "x": 330, "y": 562, "width": 200, "height": 20, "rotation": 0, "visible": true },
+        { "id": 4, "name": "", "type": "oneway", "x": 200, "y": 484, "width": 200, "height": 20, "rotation": 0, "visible": true },
+        { "id": 5, "name": "", "type": "oneway", "x": 330, "y": 406, "width": 200, "height": 20, "rotation": 0, "visible": true },
+        { "id": 6, "name": "", "type": "oneway", "x": 200, "y": 328, "width": 200, "height": 20, "rotation": 0, "visible": true },
+        { "id": 7, "name": "", "type": "oneway", "x": 330, "y": 250, "width": 200, "height": 20, "rotation": 0, "visible": true },
+        { "id": 8, "name": "", "type": "static", "x": 280, "y": 172, "width": 220, "height": 20, "rotation": 0, "visible": true }
+      ]
+    },
+    {
+      "id": 2, "name": "Collectibles", "type": "objectgroup", "visible": true, "opacity": 1, "x": 0, "y": 0, "draworder": "topdown",
+      "objects": [
+        { "id": 20, "name": "", "type": "", "x": 300, "y": 605, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true },
+        { "id": 21, "name": "", "type": "", "x": 430, "y": 527, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true },
+        { "id": 22, "name": "", "type": "", "x": 300, "y": 449, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true },
+        { "id": 23, "name": "", "type": "", "x": 430, "y": 371, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true },
+        { "id": 24, "name": "", "type": "", "x": 300, "y": 293, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true },
+        { "id": 25, "name": "", "type": "", "x": 430, "y": 215, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true }
+      ]
+    },
+    {
+      "id": 3, "name": "Enemies", "type": "objectgroup", "visible": true, "opacity": 1, "x": 0, "y": 0, "draworder": "topdown",
+      "objects": []
+    },
+    {
+      "id": 4, "name": "Goal", "type": "objectgroup", "visible": true, "opacity": 1, "x": 0, "y": 0, "draworder": "topdown",
+      "objects": [
+        { "id": 50, "name": "", "type": "goal", "x": 390, "y": 140, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true }
+      ]
+    },
+    {
+      "id": 5, "name": "Spawn", "type": "objectgroup", "visible": true, "opacity": 1, "x": 0, "y": 0, "draworder": "topdown",
+      "objects": [
+        { "id": 60, "name": "", "type": "spawn", "x": 290, "y": 700, "width": 0, "height": 0, "point": true, "rotation": 0, "visible": true }
+      ]
+    },
+    {
+      "id": 6, "name": "Labels", "type": "objectgroup", "visible": true, "opacity": 1, "x": 0, "y": 0, "draworder": "topdown",
+      "objects": [
+        { "id": 70, "name": "", "type": "", "x": 60, "y": 694, "width": 260, "height": 20, "rotation": 0, "visible": true,
+          "text": { "text": "↑ climb the shelves (jump up through them)", "wrap": true, "pixelsize": 13, "color": "#6b7077" } },
+        { "id": 71, "name": "", "type": "", "x": 300, "y": 138, "width": 200, "height": 20, "rotation": 0, "visible": true,
+          "text": { "text": "top shelf — finish! ↑", "wrap": true, "pixelsize": 13, "color": "#6b7077" } }
+      ]
+    }
+  ]
+}
