@@ -8,6 +8,7 @@ import { TX } from '../engine/registry';
 export class Hud {
   private hearts: Phaser.GameObjects.Image[] = [];
   private scoreText: Phaser.GameObjects.Text;
+  private statusText: Phaser.GameObjects.Text;
 
   constructor(scene: Phaser.Scene, maxHearts: number) {
     const pad = 16;
@@ -28,6 +29,21 @@ export class Hud {
       .setOrigin(1, 0)
       .setScrollFactor(0)
       .setDepth(100);
+
+    // active power-up countdowns (e.g. "SPEED 4s   INVINCIBLE 5s"), top-center
+    this.statusText = scene.add
+      .text(scene.cameras.main.width / 2, pad, '', {
+        fontFamily: FONT.mono,
+        fontSize: '16px',
+        color: css(THEME.teal),
+      })
+      .setOrigin(0.5, 0)
+      .setScrollFactor(0)
+      .setDepth(100);
+  }
+
+  setStatus(text: string): void {
+    this.statusText.setText(text);
   }
 
   setHearts(n: number): void {

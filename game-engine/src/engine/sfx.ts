@@ -60,6 +60,30 @@ export class Sfx {
   hurt(): void {
     this.blip(160, 0.18, 'sawtooth', 0.05);
   }
+  smash(): void {
+    this.blip(120, 0.12, 'square', 0.06);
+    this.blip(210, 0.08, 'sawtooth', 0.04);
+  }
+  powerup(): void {
+    this.ensure();
+    const c = this.ctx;
+    if (!c) return;
+    const t0 = c.currentTime;
+    [660, 880, 1175].forEach((f, i) => {
+      const o = c.createOscillator();
+      const g = c.createGain();
+      o.type = 'square';
+      o.frequency.value = f;
+      const t = t0 + i * 0.06;
+      g.gain.setValueAtTime(0.0001, t);
+      g.gain.exponentialRampToValueAtTime(0.05, t + 0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+      o.connect(g);
+      g.connect(c.destination);
+      o.start(t);
+      o.stop(t + 0.14);
+    });
+  }
   win(): void {
     this.ensure();
     const c = this.ctx;

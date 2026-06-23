@@ -43,13 +43,21 @@ export const TX = {
 } as const;
 
 // ---- accessibility --------------------------------------------------
-let reducedMotionCache: boolean | null = null;
-/** Honors `prefers-reduced-motion`; the juice dials down, never off-puttingly. */
+let reducedMotionMql: MediaQueryList | null = null;
+let reducedMotionResolved = false;
+/**
+ * Honors `prefers-reduced-motion`, read LIVE each call: the MediaQueryList is
+ * created once, but `.matches` reflects the *current* setting — so toggling
+ * Reduce Motion mid-session (e.g. a photosensitive player reacting to the
+ * invincibility hue cycle) takes effect without a reload. The juice dials down,
+ * never off-puttingly.
+ */
 export function prefersReducedMotion(): boolean {
-  if (reducedMotionCache !== null) return reducedMotionCache;
-  reducedMotionCache =
-    typeof window !== 'undefined' &&
-    typeof window.matchMedia === 'function' &&
-    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  return reducedMotionCache;
+  if (!reducedMotionResolved) {
+    reducedMotionResolved = true;
+    if (typeof window !== 'undefined' && typeof window.matchMedia === 'function') {
+      reducedMotionMql = window.matchMedia('(prefers-reduced-motion: reduce)');
+    }
+  }
+  return reducedMotionMql ? reducedMotionMql.matches : false;
 }

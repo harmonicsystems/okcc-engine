@@ -235,12 +235,22 @@ function drawObject(g: Phaser.GameObjects.Graphics, role: Role): void {
       g.fillRect(4, h - 6, 16, 4); // base
       break;
     }
-    case 'powerup': {
-      g.fillStyle(darken(c, 18), 1);
+    case 'speedPower': {
+      // a glowing orb with a bright core (the prototype's blue speed orb)
+      g.fillStyle(darken(c, 24), 1);
+      g.fillCircle(cx, cy, cx - 1);
+      g.fillStyle(c, 1);
+      g.fillCircle(cx, cy, cx - 4);
+      g.fillStyle(0xffffff, 1);
+      g.fillCircle(cx, cy, Math.max(3, cx * 0.32));
+      break;
+    }
+    case 'starPower': {
+      g.fillStyle(darken(c, 20), 1);
       g.fillCircle(cx, cy, cx - 1);
       g.fillStyle(c, 1);
       g.fillPoints(starPoints(cx, cy, cx - 3, (cx - 3) * 0.45), true);
-      g.fillStyle(lighten(c, 35), 1);
+      g.fillStyle(lighten(c, 32), 1);
       g.fillPoints(starPoints(cx, cy, (cx - 3) * 0.55, (cx - 3) * 0.25), true);
       break;
     }

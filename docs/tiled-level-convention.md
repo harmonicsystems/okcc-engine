@@ -33,7 +33,7 @@ tolerated (you get sensible fallbacks).
 |---|---|---|---|
 | `Platforms` | rectangles | the seven platform primitives | `parsePlatforms` |
 | `Collectibles` | points | pickups (touch = score) | `parseCollectibles` |
-| `Enemies` | points | hazards, patrollers, bounce pads | `parseEnemies` |
+| `Enemies` | points | hazards, patrollers, bounce pads, power-ups | `parseEnemies` |
 | `Goal` | point | the level finish (first object only) | `parseGoal` |
 | `Spawn` | point | player start (first object only) | `parseSpawn` |
 | `Labels` | text objects | on-screen facilitator/teaching text | `parseLabels` |
@@ -109,6 +109,10 @@ skipped.
 | `bouncePad` | placeable launcher (object-lane cousin of `bouncy`) | `power` (`FEEL.bounce × 1.08`) | land on top → fling up |
 | `groundPatroller` | walks a path on the ground; touch = damage | `range` (`90`), `speed` (`70`), `dir` (`1`) | gravity-bound; turns at bounds or on a wall |
 | `airPatroller` | flies a path; touch = damage | `range` (`120`), `speed` (`80`), `dir` (`1`), `axis` (`"x"`) | gravity-free; gentle bob on the cross-axis |
+| `speedPower` | speed power-up (cyan orb) | `duration` (`5000`) | touch → ×1.8 top speed + afterimage echoes |
+| `starPower` | invincibility (gold star) | `duration` (`6000`) | touch → hue-glow; smash enemies for points, ignore hazards |
+
+- `duration` (int, ms) overrides how long the power lasts; omit for the defaults above.
 
 - `range` / `speed` are **int**; `dir` is **int** (`1`/`-1`); `power` is **int** (px/s launch).
 - `axis` is a **string**, `"x"` (horizontal patrol, default) or `"y"` (vertical patrol). It is
@@ -210,7 +214,8 @@ like the running game and the worksheet frames.
 | `airPatroller` | `#fb7185` |
 | `bouncePad` | `#a3e635` |
 | `goal` | `#4ade80` |
-| `powerup` | `#c084fc` |
+| `speedPower` | `#4cc9f0` |
+| `starPower` | `#fde047` |
 
 > Colors are taken from each role's `color` field in `roles.ts` (stored there as `0xRRGGBB`;
 > shown above as hex for Tiled). Color is **reinforcement** — readability is carried by shape +

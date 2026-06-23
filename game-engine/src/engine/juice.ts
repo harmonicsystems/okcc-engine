@@ -14,16 +14,14 @@ import { TX, prefersReducedMotion } from './registry';
 
 export class Juice {
   private scene: Phaser.Scene;
-  private reduced: boolean;
 
   constructor(scene: Phaser.Scene) {
     this.scene = scene;
-    this.reduced = prefersReducedMotion();
   }
 
   /** The collectible bursts into copies of itself (textured with its own drawing). */
   collectBurst(x: number, y: number, textureKey: string): void {
-    if (this.reduced) return;
+    if (prefersReducedMotion()) return;
     const p = this.scene.add.particles(x, y, textureKey, {
       speed: { min: 70, max: 200 },
       angle: { min: 0, max: 360 },
@@ -40,7 +38,7 @@ export class Juice {
 
   /** A small puff of dust on landing / launching. */
   puff(x: number, y: number, count = 6): void {
-    if (this.reduced) return;
+    if (prefersReducedMotion()) return;
     const p = this.scene.add.particles(x, y, TX.dust, {
       speedX: { min: -60, max: 60 },
       speedY: { min: -90, max: -20 },
@@ -66,7 +64,7 @@ export class Juice {
       })
       .setOrigin(0.5)
       .setDepth(50);
-    if (this.reduced) {
+    if (prefersReducedMotion()) {
       this.scene.time.delayedCall(550, () => t.destroy());
       return;
     }
@@ -81,12 +79,12 @@ export class Juice {
   }
 
   shake(intensity = 0.008, duration = 160): void {
-    if (this.reduced) return;
+    if (prefersReducedMotion()) return;
     this.scene.cameras.main.shake(duration, intensity);
   }
 
   flash(color: number = 0xffffff, duration = 140): void {
-    if (this.reduced) return;
+    if (prefersReducedMotion()) return;
     const r = (color >> 16) & 0xff;
     const g = (color >> 8) & 0xff;
     const b = color & 0xff;
@@ -97,7 +95,7 @@ export class Juice {
   fireworks(textureKeys: string[]): void {
     const cam = this.scene.cameras.main;
     const keys = textureKeys.length ? textureKeys : [TX.spark];
-    const count = this.reduced ? 1 : 5;
+    const count = prefersReducedMotion() ? 1 : 5;
     for (let i = 0; i < count; i++) {
       const delay = i * 220;
       this.scene.time.delayedCall(delay, () => {
@@ -109,14 +107,31 @@ export class Juice {
           angle: { min: 0, max: 360 },
           scale: { start: 0.6, end: 0 },
           lifespan: 700,
-          quantity: this.reduced ? 6 : 16,
+          quantity: prefersReducedMotion() ? 6 : 16,
           emitting: false,
         });
         p.setDepth(60);
-        p.explode(this.reduced ? 6 : 16, x, y);
+        p.explode(prefersReducedMotion() ? 6 : 16, x, y);
         this.scene.time.delayedCall(800, () => p.destroy());
       });
     }
+  }
+
+  /** A small rainbow sparkle burst — trails the player while invincible. */
+  sparkle(x: number, y: number): void {
+    if (prefersReducedMotion()) return;
+    const p = this.scene.add.particles(x, y, TX.spark, {
+      speed: { min: 40, max: 140 },
+      scale: { start: 0.6, end: 0 },
+      lifespan: 360,
+      quantity: 5,
+      emitting: false,
+      tint: [0xff5d8f, 0xffd166, 0x06d6a0, 0x4cc9f0, 0x9b5de5],
+      blendMode: 'ADD',
+    });
+    p.setDepth(45);
+    p.explode(5, x, y);
+    this.scene.time.delayedCall(420, () => p.destroy());
   }
 
   /** A soft glow on a sprite — WebGL only; degrades to nothing on Canvas. */

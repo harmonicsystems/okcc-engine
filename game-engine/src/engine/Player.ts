@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import type { CharacterDef } from '../config/characters';
-import { resolveFeel, type Feel } from '../config/variables';
+import { resolveFeel, type Feel, POWERUPS } from '../config/variables';
+import { THEME } from '../config/theme';
 import { TX, prefersReducedMotion } from './registry';
 import type { Controls } from './Controls';
 
@@ -12,12 +13,19 @@ import type { Controls } from './Controls';
 //  It is art-agnostic: it reads a CharacterDef (a saved set of feel dials +
 //  a texture) and behaves. Swapping the drawing changes nothing here.
 //
-//  It emits events the scene turns into juice + sfx, so feel and feedback
-//  stay decoupled:  'jump' | 'doublejump' | 'land' | 'bounce' | 'hurt'
+//  It also owns its power-up state (constitution #6, optional depth) and the
+//  postFX it wears, so the speed/invincibility effects modulate the player's
+//  own glow + hue without coupling to the scene.
+//
+//  Events the scene turns into juice + sfx, so feel + feedback stay decoupled:
+//    'jump' | 'doublejump' | 'land' | 'bounce' | 'hurt' | 'powerup'(kind)
 // =====================================================================
 
 const FALL_CAP = 1600; // terminal velocity (px/s)
-const INVINCIBLE_MS = 1000;
+const HURT_IMMUNE_MS = 1000; // post-hit damage immunity (the blink)
+const BASE_GLOW = 4;
+const STAR_GLOW = 9; // brighter glow while invincible
+const STAR_TINT = 0xffe066; // steady, renderer-independent invincibility tell (Canvas + reduced-motion safe)
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
   readonly def: CharacterDef;
@@ -29,7 +37,16 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private buffer = 0; // ms of jump-buffer remaining
   private wasJumpHeld = false;
   private wasGrounded = false;
-  private invincible = 0;
+  private hurtImmuneMs = 0;
+
+  // power-ups
+  private speedMs = 0;
+  private starMs = 0;
+  private echoAcc = 0;
+  private hueA = 0;
+  private wasStar = false;
+  private glowFX?: Phaser.FX.Glow;
+  private hueFX?: Phaser.FX.ColorMatrix;
 
   constructor(scene: Phaser.Scene, x: number, y: number, def: CharacterDef) {
     super(scene, x, y, TX.char(def.key));
@@ -49,10 +66,16 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     body.setGravityY(this.feel.gravity);
 
     this.setDepth(10);
-  }
 
-  get isInvincible(): boolean {
-    return this.invincible > 0;
+    // the player owns its FX (WebGL-only; degrade gracefully to Canvas)
+    if (scene.renderer.type === Phaser.WEBGL) {
+      try {
+        this.glowFX = this.postFX.addGlow(THEME.teal, BASE_GLOW);
+        this.hueFX = this.postFX.addColorMatrix();
+      } catch {
+        /* FX are pure polish */
+      }
+    }
   }
 
   get grounded(): boolean {
@@ -60,10 +83,40 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     return body.blocked.down || body.touching.down;
   }
 
+  get hasSpeed(): boolean {
+    return this.speedMs > 0;
+  }
+  get hasStar(): boolean {
+    return this.starMs > 0;
+  }
+  /** Immune to damage right now (post-hit blink OR invincibility star). */
+  get isInvulnerable(): boolean {
+    return this.hurtImmuneMs > 0 || this.starMs > 0;
+  }
+  get speedMsLeft(): number {
+    return Math.max(0, this.speedMs);
+  }
+  get starMsLeft(): number {
+    return Math.max(0, this.starMs);
+  }
+
+  /** Grant (or extend) a power-up. */
+  grantPower(kind: 'speed' | 'star', ms: number): void {
+    if (kind === 'speed') this.speedMs = Math.max(this.speedMs, ms);
+    else this.starMs = Math.max(this.starMs, ms);
+    this.emit('powerup', kind);
+  }
+
   /** Called every frame by GameScene, after controls.update(). */
   step(controls: Controls, dtMs: number): void {
     const body = this.body as Phaser.Physics.Arcade.Body;
     const grounded = this.grounded;
+
+    // --- power-up timers + the speed cap ---
+    if (this.speedMs > 0) this.speedMs -= dtMs;
+    if (this.starMs > 0) this.starMs -= dtMs;
+    const boosting = this.speedMs > 0;
+    body.setMaxVelocity(this.feel.speed * (boosting ? POWERUPS.speedBoost : 1), FALL_CAP);
 
     // --- forgiveness timers (coyote + buffer) ---
     if (grounded) {
@@ -80,12 +133,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.buffer > 0) this.buffer -= dtMs;
     if (controls.jumpJustPressed) this.buffer = this.feel.bufferMs;
 
-    // --- horizontal: accelerate to speed, coast with friction ---
+    // --- horizontal: accelerate to (boosted) speed, coast with friction ---
     const dir = (controls.right ? 1 : 0) - (controls.left ? 1 : 0);
     const control = grounded ? 1 : this.feel.airControl;
+    const boostMul = boosting ? POWERUPS.speedBoost : 1;
     if (dir !== 0) {
       const turning = Math.sign(body.velocity.x) === -dir && Math.abs(body.velocity.x) > 10;
-      body.setAccelerationX(dir * this.feel.accel * control * (turning ? 1.8 : 1));
+      body.setAccelerationX(dir * this.feel.accel * control * (turning ? 1.8 : 1) * boostMul);
       body.setDragX(0);
       this.facing = dir as 1 | -1;
       this.setFlipX(dir < 0);
@@ -125,12 +179,41 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
     this.wasGrounded = grounded;
 
-    // --- invincibility blink after a hit ---
-    if (this.invincible > 0) {
-      this.invincible -= dtMs;
-      this.setAlpha(Math.floor(this.invincible / 80) % 2 === 0 ? 1 : 0.35);
-      if (this.invincible <= 0) {
-        this.invincible = 0;
+    // --- speed: phased afterimage ghosts while moving fast ---
+    if (boosting && !prefersReducedMotion() && Math.abs(body.velocity.x) > 30) {
+      this.echoAcc += dtMs;
+      if (this.echoAcc >= POWERUPS.echoMs) {
+        this.spawnEcho();
+        this.echoAcc = 0;
+      }
+    }
+
+    // --- invincibility tell ---
+    // A steady tint is the renderer-independent, motion-safe signal (works on
+    // Canvas and with prefers-reduced-motion, where the WebGL hue/glow + sparkles
+    // are absent). On WebGL we add the flashy hue-rotation + brighter glow on top.
+    if (this.starMs > 0) {
+      this.setTint(STAR_TINT); // every frame: self-heals after any clearTint
+      if (this.hueFX) {
+        // slow the cycle under reduced motion, never stop it jarringly
+        this.hueA = (this.hueA + (prefersReducedMotion() ? 1.5 : 6)) % 360;
+        this.hueFX.hue(this.hueA);
+        if (this.glowFX) this.glowFX.outerStrength = STAR_GLOW;
+      }
+      this.wasStar = true;
+    } else if (this.wasStar) {
+      this.clearTint();
+      if (this.hueFX) this.hueFX.reset();
+      if (this.glowFX) this.glowFX.outerStrength = BASE_GLOW;
+      this.wasStar = false;
+    }
+
+    // --- post-hit immunity blink ---
+    if (this.hurtImmuneMs > 0) {
+      this.hurtImmuneMs -= dtMs;
+      this.setAlpha(Math.floor(this.hurtImmuneMs / 80) % 2 === 0 ? 1 : 0.35);
+      if (this.hurtImmuneMs <= 0) {
+        this.hurtImmuneMs = 0;
         this.setAlpha(1);
         this.clearTint();
       }
@@ -148,8 +231,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   /** Take a hit from a hazard at world-x `fromX`. Returns false if currently immune. */
   takeHit(fromX: number): boolean {
-    if (this.invincible > 0) return false;
-    this.invincible = INVINCIBLE_MS;
+    if (this.isInvulnerable) return false;
+    this.hurtImmuneMs = HURT_IMMUNE_MS;
     const body = this.body as Phaser.Physics.Arcade.Body;
     const away = this.x < fromX ? -1 : 1;
     body.setVelocity(away * 220, -260);
@@ -158,15 +241,38 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     return true;
   }
 
-  /** Hard reset to a respawn point (after a pit fall). */
+  /** Hard reset to a respawn point (after a pit fall). Clears power-ups + FX. */
   respawn(x: number, y: number): void {
     const body = this.body as Phaser.Physics.Arcade.Body;
     body.reset(x, y);
     this.jumpsUsed = 0;
     this.coyote = 0;
     this.buffer = 0;
+    this.speedMs = 0;
+    this.starMs = 0;
+    this.hurtImmuneMs = 0;
     this.setAlpha(1);
     this.clearTint();
+    if (this.hueFX) this.hueFX.reset();
+    if (this.glowFX) this.glowFX.outerStrength = BASE_GLOW;
+    this.wasStar = false;
+  }
+
+  /** A fading, cyan-tinted ghost of the player — the speed afterimage. */
+  private spawnEcho(): void {
+    const ghost = this.scene.add
+      .image(this.x, this.y, this.texture.key)
+      .setScale(this.scaleX, this.scaleY)
+      .setFlipX(this.flipX)
+      .setAlpha(0.5)
+      .setTint(0x7fdfff)
+      .setDepth(this.depth - 1);
+    this.scene.tweens.add({
+      targets: ghost,
+      alpha: 0,
+      duration: 260,
+      onComplete: () => ghost.destroy(),
+    });
   }
 
   private squash(sx: number, sy: number, ms: number): void {

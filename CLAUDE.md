@@ -142,9 +142,10 @@ a `type` and builds the behavior. (Proven in v6–v8.)
 ### Object-lane entities
 `Collectible` (touch = score), `Hazard` (static, touch = damage), `GroundPatroller` and
 `AirPatroller` (move a path, touch = damage), `BouncePad`, `Goal`. Optional eighth primitive:
-**power-up** (an overlap that flips a timer — speed boost with afterimage echoes, or
-invincibility with hue-rotation). Power-ups are constitution #6 (optional depth). *Planned: the
-`powerup` role + placeholder exist, but the entity and its shaders are not built yet (Phase 3).*
+**power-up** (`engine/Powerup.ts`) — an overlap that flips a timer. **Built:** `speedPower`
+(cyan orb → ×1.8 speed + afterimage echoes) and `starPower` (gold star → hue-rotation glow,
+smash-through-enemies, hazard immunity); two roles in `roles.ts`, tuned in `POWERUPS`
+(`config/variables.ts`). Power-ups are constitution #6 (optional depth — the goal never needs them).
 
 ---
 
@@ -232,8 +233,11 @@ Only `config/*` and Tiled files should ever need editing to add a kid's content.
 Every verb gets immediate confirmation: collect → the gem **bursts into copies of itself**
 (particle emitter textured with the kid's own drawing); land → squash-and-stretch + dust;
 bounce → upward puff; hit → camera shake; win → fireworks made of the kids' drawings + camera
-flash; the player carries a (WebGL) `postFX` glow. *Planned (Phase 3): power-ups add afterimage
-echoes (speed) and animated hue-rotation via a ColorMatrix shader (invincible); camera bloom.*
+flash; the player carries a (WebGL) `postFX` glow. **Power-ups** add afterimage echoes (speed)
+and, for invincibility, a steady tint (every renderer — the motion-safe, Canvas-safe signal)
+plus animated hue-rotation via a ColorMatrix shader, brighter glow, and rainbow sparkles on
+WebGL. All reduced-motion aware: the hue cycle slows (never strobes), echoes + sparkles drop,
+and the tint + HUD keep invincibility legible with motion minimized. *Planned: camera bloom.*
 
 **Accessibility:** all of the above must honor `prefers-reduced-motion` — reduce particle
 counts, drop screen shake, slow or stop hue cycling. The game must be fully playable and
@@ -268,13 +272,12 @@ okcc-engine/                     # repo root
         Player.ts Controls.ts     # the character controller (game feel) + input merge
         platforms/factory.ts      # data-driven makePlatform (the seven types)
         Collectible.ts Hazard.ts GroundPatroller.ts AirPatroller.ts BouncePad.ts Goal.ts
-        Parallax.ts placeholders.ts juice.ts registry.ts sfx.ts
+        Powerup.ts Parallax.ts placeholders.ts juice.ts registry.ts sfx.ts
       hud/Hud.ts
 
 # Future (Phase 2/3, not yet in repo):
 #   game-engine/worksheets.html + src/worksheet/   (worksheet generator — a 2nd Vite entry)
 #   scripts/ingest.ts                              (scan → crop → manifest)
-#   power-up entity + shaders                      (role + placeholder exist; behavior doesn't)
 ```
 
 ```
@@ -311,9 +314,10 @@ half lands in Phase 2). Verified end-to-end in-browser; GitHub Pages deploy work
 character spread, title cards) from `roles.ts`. Prove one scanned drawing replaces its
 placeholder through `scripts/ingest.ts`.
 
-**Phase 3 — the full game.** Remaining Kinderhook levels as Tiled files (the teaching curve),
-power-ups, secrets/optional depth. Audio is its own later workshop concept — design it
-deliberately (recording kids needs consent + Super-Stories coordination).
+**Phase 3 — the full game.** Remaining Kinderhook levels as Tiled files (the teaching curve)
+and secrets/optional depth. (Power-ups — speed + invincibility — already shipped, in The Park.)
+Audio is its own later workshop concept — design it deliberately (recording kids needs consent +
+Super-Stories coordination).
 
 ---
 

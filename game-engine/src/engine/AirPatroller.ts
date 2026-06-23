@@ -38,7 +38,8 @@ export class AirPatroller extends Phaser.Physics.Arcade.Sprite {
   }
 
   update(time: number): void {
-    const body = this.body as Body;
+    const body = this.body as Body | null;
+    if (!body) return; // destroyed (e.g. smashed while invincible)
     const bob = prefersReducedMotion() ? 0 : Math.cos(time / 280) * 40;
     if (this.axis === 'x') {
       const pos = this.x;

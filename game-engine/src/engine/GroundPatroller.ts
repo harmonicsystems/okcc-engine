@@ -35,7 +35,8 @@ export class GroundPatroller extends Phaser.Physics.Arcade.Sprite {
   }
 
   update(): void {
-    const body = this.body as Body;
+    const body = this.body as Body | null;
+    if (!body) return; // destroyed (e.g. smashed while invincible)
     if (this.x >= this.startX + this.range && body.velocity.x > 0) {
       body.setVelocityX(-this.speed);
     } else if (this.x <= this.startX && body.velocity.x < 0) {

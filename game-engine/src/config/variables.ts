@@ -35,3 +35,14 @@ export type Feel = typeof FEEL;
 export function resolveFeel(overrides?: Partial<Feel>): Feel {
   return { ...FEEL, ...(overrides ?? {}) };
 }
+
+// Power-up tuning (constitution #6 — optional depth). Per-pickup duration can be
+// overridden from Tiled with a `duration` property; everything else lives here.
+export const POWERUPS = {
+  speedBoost: 1.8, // horizontal top-speed multiplier while the speed orb is active
+  speedMs: 5000, // speed boost duration
+  starMs: 6000, // invincibility (star) duration
+  smashScore: 5, // points for smashing an enemy while invincible
+  echoMs: 45, // ms between afterimage ghosts while speeding
+};
+

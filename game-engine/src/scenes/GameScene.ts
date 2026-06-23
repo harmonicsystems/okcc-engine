@@ -14,12 +14,14 @@ import {
   type PlatformParams,
 } from '../engine/platforms/factory';
 import type { PlatformType } from '../config/roles';
+import { POWERUPS } from '../config/variables';
 import { Collectible } from '../engine/Collectible';
 import { Hazard } from '../engine/Hazard';
 import { Goal } from '../engine/Goal';
 import { BouncePad } from '../engine/BouncePad';
 import { GroundPatroller } from '../engine/GroundPatroller';
 import { AirPatroller } from '../engine/AirPatroller';
+import { Powerup } from '../engine/Powerup';
 import { Hud } from '../hud/Hud';
 import { TX, addScore, getScore } from '../engine/registry';
 
@@ -62,12 +64,14 @@ export class GameScene extends Phaser.Scene {
   private groundPatrollers: GroundPatroller[] = [];
   private airPatrollers: AirPatroller[] = [];
   private bouncePads: BouncePad[] = [];
+  private powerups: Powerup[] = [];
 
   private spawn = { x: 80, y: 0 };
   private worldH = 576;
   private maxHearts = 3;
   private hearts = 3;
   private finished = false;
+  private sparkAcc = 0;
 
   constructor() {
     super('Game');
@@ -85,6 +89,7 @@ export class GameScene extends Phaser.Scene {
     this.groundPatrollers = [];
     this.airPatrollers = [];
     this.bouncePads = [];
+    this.powerups = [];
   }
 
   create(): void {
@@ -114,7 +119,6 @@ export class GameScene extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, worldW, this.worldH + 400);
     this.cameras.main.setBounds(0, 0, worldW, this.worldH);
     this.cameras.main.startFollow(this.player, true, 0.12, 0.12);
-    this.juice.addGlow(this.player, THEME.teal);
     this.wirePlayerFeedback();
 
     // ---- colliders & overlaps ----
@@ -133,15 +137,18 @@ export class GameScene extends Phaser.Scene {
       this.hit((obj as unknown as Hazard).x),
     );
     this.physics.add.overlap(this.player, this.groundPatrollers, (_pl, obj) =>
-      this.hit((obj as unknown as GroundPatroller).x),
+      this.touchEnemy(obj as unknown as GroundPatroller),
     );
     this.physics.add.overlap(this.player, this.airPatrollers, (_pl, obj) =>
-      this.hit((obj as unknown as AirPatroller).x),
+      this.touchEnemy(obj as unknown as AirPatroller),
     );
     this.physics.add.collider(this.player, this.bouncePads, (_pl, obj) => {
       const pad = obj as unknown as BouncePad;
       if ((this.player.body as Body).touching.down) pad.launch(this.player);
     });
+    this.physics.add.overlap(this.player, this.powerups, (_pl, obj) =>
+      this.grabPowerup(obj as unknown as Powerup),
+    );
     if (goal) this.physics.add.overlap(this.player, goal, () => this.win());
 
     // ---- hud + touch ----
@@ -206,6 +213,10 @@ export class GameScene extends Phaser.Scene {
         this.bouncePads.push(new BouncePad(this, x, y, readProp(o, 'power', undefined as number | undefined)));
       } else if (cls === 'hazard') {
         this.hazards.push(new Hazard(this, x, y));
+      } else if (cls === 'speedPower') {
+        this.powerups.push(new Powerup(this, x, y, 'speed', readProp(o, 'duration', POWERUPS.speedMs)));
+      } else if (cls === 'starPower') {
+        this.powerups.push(new Powerup(this, x, y, 'star', readProp(o, 'duration', POWERUPS.starMs)));
       }
     }
   }
@@ -255,6 +266,15 @@ export class GameScene extends Phaser.Scene {
       this.sfx.bounce();
       this.juice.puff(this.player.x, bottom(), 8);
     });
+    this.player.on('powerup', (kind: 'speed' | 'star') => {
+      this.sfx.powerup();
+      this.juice.pop(
+        this.player.x,
+        this.player.y - 34,
+        kind === 'speed' ? 'SPEED!' : 'STAR!',
+        kind === 'speed' ? 0x4cc9f0 : 0xfde047,
+      );
+    });
   }
 
   // ------------------------------------------------------------------
@@ -270,7 +290,31 @@ export class GameScene extends Phaser.Scene {
     c.destroy();
   }
 
+  private grabPowerup(p: Powerup): void {
+    if (!p.active) return;
+    this.player.grantPower(p.kind, p.duration);
+    this.juice.collectBurst(p.x, p.y, p.texture.key);
+    p.destroy();
+  }
+
+  /** Touch a patroller: smash it for points if invincible, else take the hit. */
+  private touchEnemy(enemy: Phaser.Physics.Arcade.Sprite): void {
+    if (this.finished || !enemy.active) return;
+    if (this.player.hasStar) {
+      this.juice.collectBurst(enemy.x, enemy.y, enemy.texture.key);
+      this.juice.shake(0.006, 120);
+      this.sfx.smash();
+      const total = addScore(this, POWERUPS.smashScore);
+      this.hud.setScore(total);
+      this.juice.pop(enemy.x, enemy.y - 10, '+' + POWERUPS.smashScore, 0xfde047);
+      enemy.destroy();
+    } else {
+      this.hit(enemy.x);
+    }
+  }
+
   private hit(fromX: number): void {
+    if (this.finished) return;
     if (!this.player.takeHit(fromX)) return;
     this.hearts--;
     this.juice.shake(0.01, 180);
@@ -353,10 +397,28 @@ export class GameScene extends Phaser.Scene {
     this.controls.update();
     this.player.step(this.controls, delta);
     for (const p of this.platforms) p.update(delta, this.player);
-    for (const e of this.groundPatrollers) e.update();
-    for (const e of this.airPatrollers) e.update(time);
+    // skip any that got smashed this run (destroyed entities have no body)
+    for (const e of this.groundPatrollers) if (e.active) e.update();
+    for (const e of this.airPatrollers) if (e.active) e.update(time);
     this.parallax.update(cam);
 
+    // power-up feedback: HUD countdown + invincibility sparkles
+    this.updatePowerHud();
+    if (this.player.hasStar) {
+      this.sparkAcc += delta;
+      if (this.sparkAcc > 110) {
+        this.juice.sparkle(this.player.x, this.player.y);
+        this.sparkAcc = 0;
+      }
+    }
+
     if (this.player.y > this.worldH + 200) this.pitFall();
+  }
+
+  private updatePowerHud(): void {
+    let s = '';
+    if (this.player.hasSpeed) s += 'SPEED ' + Math.ceil(this.player.speedMsLeft / 1000) + 's   ';
+    if (this.player.hasStar) s += 'INVINCIBLE ' + Math.ceil(this.player.starMsLeft / 1000) + 's';
+    this.hud.setStatus(s);
   }
 }

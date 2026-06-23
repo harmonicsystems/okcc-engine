@@ -74,7 +74,8 @@ export const OBJECT_ROLES = [
   'airPatroller',
   'bouncePad',
   'goal',
-  'powerup',
+  'speedPower',
+  'starPower',
 ] as const;
 export type ObjectRole = (typeof OBJECT_ROLES)[number];
 
@@ -224,15 +225,25 @@ export const ROLES = {
     frame: { w: 52, h: 72 },
     prompt: 'Draw the finish — a flag, a door, a portal home.',
   },
-  powerup: {
-    key: 'powerup',
-    label: 'Power-up',
+  speedPower: {
+    key: 'speedPower',
+    label: 'Speed power-up',
     lane: 'object',
-    color: 0xc084fc,
+    color: 0x4cc9f0,
+    shape: 'circle',
+    motion: 'pulse',
+    frame: { w: 30, h: 30 },
+    prompt: 'Draw a speed boost — turbo boots, a lightning orb, a rocket.',
+  },
+  starPower: {
+    key: 'starPower',
+    label: 'Invincibility star',
+    lane: 'object',
+    color: 0xfde047,
     shape: 'star',
     motion: 'spin',
-    frame: { w: 32, h: 32 },
-    prompt: 'Draw a power-up — speed boots, a star, a shield.',
+    frame: { w: 34, h: 34 },
+    prompt: 'Draw an invincibility star — it makes you unstoppable for a few seconds.',
   },
 } satisfies Record<string, Role>;
 
