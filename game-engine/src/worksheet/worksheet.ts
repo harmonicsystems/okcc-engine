@@ -84,20 +84,11 @@ sheet(
 ).appendChild(tileGrid(rolesIn('object')));
 
 // ---- character spreads (one page each) ----
-const intro = document.createElement('section');
-intro.className = 'sheet';
-intro.id = 'characters';
-intro.innerHTML = `
-  <div class="sheet-head">
-    <h2>Characters</h2>
-    <p>Each child draws their robot in five poses on its own page. Fill the colour key first, then keep those exact colours in every pose so it stays the same robot.</p>
-  </div>`;
-sheets.appendChild(intro);
-
 const KEY = ['body', 'face', 'eyes', 'accent'];
-for (const ch of CHARACTERS) {
+CHARACTERS.forEach((ch, i) => {
   const s = document.createElement('section');
   s.className = 'sheet character';
+  if (i === 0) s.id = 'characters'; // section anchor for the toolbar nav
 
   const keyHtml = KEY.map((k) => `<div class="key"><span class="dot"></span><span>${k}</span></div>`).join('');
   s.innerHTML = `
@@ -128,4 +119,4 @@ for (const ch of CHARACTERS) {
   s.appendChild(path);
 
   sheets.appendChild(s);
-}
+});

@@ -242,7 +242,11 @@ body {
   .toolbar {
     display: none;
   }
+  /* CRITICAL: block, not flex. A flex container does not fragment for print —
+     Chrome ignores page/break rules inside it, which sliced tiles across pages
+     and let sections start mid-page. Plain block flow paginates correctly. */
   .sheets {
+    display: block;
     padding: 0;
     gap: 0;
   }
@@ -252,8 +256,19 @@ body {
     padding: 0;
     box-shadow: none;
   }
+  /* each section / character spread starts on a fresh page */
   .sheets > .sheet + .sheet {
     break-before: page;
+    page-break-before: always;
+  }
+  /* never slice a tile or a character spread across a page boundary */
+  .tile {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+  .sheet.character {
+    break-inside: avoid;
+    page-break-inside: avoid;
   }
 }
 @page {
