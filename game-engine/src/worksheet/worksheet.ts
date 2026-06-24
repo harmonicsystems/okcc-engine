@@ -63,6 +63,7 @@ function tileGrid(roles: Role[]): HTMLElement {
         aspectW: role.frame.w,
         aspectH: role.frame.h,
         manifestPath: objectsPath(role),
+        boxMaxMm: 42, // 3 cols x 3 rows fits a section on one page, with headroom for header/footer
       }),
     );
   }
