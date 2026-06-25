@@ -62,9 +62,6 @@
   /* Super-Stories logo lockups (graceful: alt text shows if the file is absent) */
   .ss-logo{height:34px;width:auto;vertical-align:middle}
   .partner .ss-logo{height:30px}
-  /* logo PNG has a baked white bg: invisible on the white header, so on the dark
-     footer we seat it on a clean white chip rather than a raw white rectangle */
-  footer .ss-logo{height:28px;background:#fff;padding:4px 8px;border-radius:8px;box-sizing:content-box}
 
   .panel{background:#fff;color:var(--ink);border-radius:14px;padding:18px}
   .panel h3{font-family:var(--display);font-size:15px;margin:0 0 2px}
@@ -109,10 +106,9 @@
   .mail{display:inline-block;font-weight:700;color:#fff;background:var(--ink);border-radius:10px;padding:13px 22px;text-decoration:none}
   .mail:hover{background:#000}
 
-  footer{background:var(--machine);color:#9a9ea7;padding:40px 0;font-size:13.5px}
+  footer{background:#fff;color:var(--ink);padding:40px 0;font-size:13.5px;border-top:1px solid var(--line)}
   footer .row{display:flex;justify-content:space-between;align-items:end;flex-wrap:wrap;gap:16px}
-  footer .brand{color:#fff}
-  footer .kicker{font-family:var(--display);color:#e8eaed;font-size:16px}
+  footer .brand{color:var(--ink)}
 
   @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
 </style>
@@ -276,6 +272,8 @@ const platforms = [
   { x: 360, y: 210, w: 150, h: 14 },
   { x: 520, y: 300, w: 120, h: 14 }
 ];
+// skinned → each platform takes its own colour; the gray skeleton stays gray
+const PLATFORM_COLORS = ["#0fa3a3","#e5454b","#f4a72c","#7a5cff"];
 let dots = [];
 function spawnDot(){ dots.push({ x: 40 + Math.random()*(W-80), y: 60 + Math.random()*(H-160), r: 7, t: Math.random()*6.28 }); }
 for (let i=0;i<5;i++) spawnDot();
@@ -332,12 +330,21 @@ function draw(){
     for (let x=0;x<W;x+=44){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
     for (let y=0;y<H;y+=44){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
   }
-  ctx.fillStyle = "#3a3d44";
-  for (const p of platforms) ctx.fillRect(p.x,p.y,p.w,p.h);
+  for (let i=0;i<platforms.length;i++){
+    const p = platforms[i];
+    ctx.fillStyle = skinned ? PLATFORM_COLORS[i % PLATFORM_COLORS.length] : "#3a3d44";
+    ctx.fillRect(p.x,p.y,p.w,p.h);
+  }
   for (const d of dots){
     d.t += 0.08; const pulse = 1 + Math.sin(d.t)*0.12;
-    ctx.beginPath(); ctx.arc(d.x,d.y,d.r*pulse,0,6.28); ctx.fillStyle="#8b8f98"; ctx.fill();
-    ctx.lineWidth=2; ctx.strokeStyle="#c9ccd2"; ctx.stroke();
+    if (skinned){
+      starPath(d.x, d.y, d.r*1.5*pulse, d.r*0.62*pulse, d.t*0.15);
+      ctx.fillStyle="#ffd23f"; ctx.fill();
+      ctx.lineWidth=2; ctx.strokeStyle="#1c4aa0"; ctx.stroke();
+    } else {
+      ctx.beginPath(); ctx.arc(d.x,d.y,d.r*pulse,0,6.28); ctx.fillStyle="#8b8f98"; ctx.fill();
+      ctx.lineWidth=2; ctx.strokeStyle="#c9ccd2"; ctx.stroke();
+    }
   }
   if (skinned && spriteReady){
     ctx.drawImage(sprite, player.x, player.y, player.w, player.h);
@@ -348,6 +355,7 @@ function draw(){
     ctx.fillRect(player.x+player.w*0.7-e/2, player.y+player.h*0.34, e, e);
   }
 }
+function starPath(cx,cy,R,r,rot){ ctx.beginPath(); for(let i=0;i<10;i++){ const rad=(i%2===0)?R:r, a=-Math.PI/2 + i*Math.PI/5 + rot, px=cx+Math.cos(a)*rad, py=cy+Math.sin(a)*rad; i===0?ctx.moveTo(px,py):ctx.lineTo(px,py); } ctx.closePath(); }
 function roundRect(x,y,w,h,r){ ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath(); }
 function loop(){ update(); draw(); requestAnimationFrame(loop); }
 loop();
