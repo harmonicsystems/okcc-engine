@@ -44,7 +44,7 @@
   .cue{display:inline-flex;align-items:center;gap:8px;margin-top:26px;font-family:var(--mono);font-size:13px;color:var(--teal-deep);text-decoration:none}
   .cue span{font-size:18px}
 
-  /* demo — the machine */
+  /* demo: the machine */
   .demo{background:var(--machine);color:#e8eaed;padding:clamp(40px,7vw,76px) 0;margin-top:24px}
   .demo h2{font-family:var(--display);font-size:clamp(22px,3.2vw,32px);margin:0 0 8px;color:#fff;letter-spacing:-.01em}
   .demo .say{color:#9a9ea7;max-width:52ch;margin:0 0 28px;font-size:15.5px}
@@ -118,7 +118,7 @@
   <section class="hero">
     <p class="eyebrow">OK Code Camp</p>
     <h1>Kids draw the characters. The game brings them to life.</h1>
-    <p class="lede">A hands-on workshop where children design a game with paper and markers — and leave with an <b>interactive souvenir</b> of their own creativity. Don't take our word for it. Play the demo, then make it yours.</p>
+    <p class="lede">A hands-on workshop where children design a game with paper and markers: and leave with an <b>interactive souvenir</b> of their own creativity. Don't take our word for it. Play the demo, then make it yours.</p>
     <a class="cue" href="#try">try it yourself <span>↓</span></a>
   </section>
 </div>
@@ -127,7 +127,7 @@
 <div class="demo" id="try">
   <div class="wrap">
     <h2>This is the skeleton</h2>
-    <p class="say">Every mechanic is here — but no identity. Move with the arrow keys, collect the dots. Then drag a dial and watch a <b>number</b> change how it moves. Same gray game, every time… until you press the button.</p>
+    <p class="say">Every mechanic is here: but no identity. Move with the arrow keys, collect the dots. Then drag a dial and watch a <b>number</b> change how it moves. Same gray game, every time… until you press the button.</p>
     <div class="stage">
       <div class="screen">
         <canvas id="game" width="660" height="380"></canvas>
@@ -158,7 +158,7 @@
   <div class="wrap">
     <h2 class="head">Three sessions, one shared game</h2>
     <div class="steps">
-      <div class="step"><div class="n">01 / design</div><h4>Imagine it</h4><p>Each child designs a character, an obstacle, and a piece of the world — all on paper. No screens, no code. Just markers and ideas.</p></div>
+      <div class="step"><div class="n">01 / design</div><h4>Imagine it</h4><p>Each child designs a character, an obstacle, and a piece of the world: all on paper. No screens, no code. Just markers and ideas.</p></div>
       <div class="step"><div class="n">02 / build &amp; playtest</div><h4>Bring it alive</h4><p>Their drawings become the skin of one game everyone shares. They play it, test it, and tune the numbers until it feels right.</p></div>
       <div class="step"><div class="n">03 / polish &amp; publish</div><h4>Keep it forever</h4><p>Final touches, then the game goes live at a real web link they can send to anyone. A souvenir of the day they made something real.</p></div>
     </div>
@@ -168,7 +168,7 @@
 <!-- PHILOSOPHY -->
 <section class="block alt">
   <div class="wrap">
-    <p class="lead-para">The child brings the imagination; the machine just runs it. Kids learn that a few numbers shape how a character behaves — so the computer is something they <b>understand and command</b>, not a mystery that belongs to grown-ups. The hand leads. The machine serves.</p>
+    <p class="lead-para">The child brings the imagination; the machine just runs it. Kids learn that a few numbers shape how a character behaves: so the computer is something they <b>understand and command</b>, not a mystery that belongs to grown-ups. The hand leads. The machine serves.</p>
     <div class="facts">
       <div><span class="k">Who</span><span class="v">Up to 4 students</span></div>
       <div><span class="k">Where</span><span class="v">Super-Stories Makers Space</span></div>
@@ -182,11 +182,8 @@
   <div class="wrap parents">
     <div>
       <h2 class="head" style="margin-bottom:18px">For parents</h2>
-      <p>Your child leaves with a <b>real game</b>, published to a link you can keep, share, and replay. You're welcome to follow along — and to sit in and make one alongside them.</p>
+      <p>Your child leaves with a <b>real game</b>, published to a link you can keep, share, and replay. You're welcome to follow along: and to sit in and make one alongside them.</p>
       <p>Want to be part of the first workshop? Reach out and we'll save a seat.</p>
-    </div>
-    <div>
-      <a class="mail" href="mailto:hello@harmonic-systems.org?subject=OK%20Code%20Camp">Save a seat →</a>
     </div>
   </div>
 </section>
@@ -195,7 +192,7 @@
   <div class="wrap row">
     <div>
       <div class="brand" style="font-family:var(--display);font-weight:700;font-size:16px">Harmonic Systems</div>
-      <div>Accessible Information · with Super-Stories</div>
+      <div>Interactive Art · with Super-Stories</div>
     </div>
     <div class="kicker">The hand leads; the machine serves.</div>
   </div>
@@ -203,7 +200,7 @@
 
 <script>
 // =====================================================================
-//  OK CODE CAMP — interactive demo (skeleton + skin toggle)
+//  OK CODE CAMP: interactive demo (skeleton + skin toggle)
 // =====================================================================
 const vars = { speed: 5, jumpHeight: 16, gravity: 0.8, size: 44 };
 
@@ -211,24 +208,51 @@ const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 const W = canvas.width, H = canvas.height;
 
-// The "skin": a stand-in hand-drawn robot. Swap this for a real kid's
-// drawing by pointing it at an image file instead.
+// The "skin": a hand-drawn blue robot holding a heart. Swap this for a
+// real kid's drawing by pointing it at an image file instead.
 const robotSVG = `
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <g fill="none" stroke="#0b3b3b" stroke-width="3" stroke-linejoin="round" stroke-linecap="round">
-    <line x1="50" y1="16" x2="50" y2="6"/>
-    <circle cx="50" cy="5" r="3.5" fill="#f5a623" stroke="none"/>
-    <rect x="22" y="18" width="56" height="46" rx="9" fill="#12b3ab"/>
-    <rect x="34" y="30" width="12" height="14" rx="3" fill="#fff"/>
-    <rect x="54" y="30" width="12" height="14" rx="3" fill="#fff"/>
-    <circle cx="40" cy="38" r="3" fill="#0b3b3b" stroke="none"/>
-    <circle cx="60" cy="38" r="3" fill="#0b3b3b" stroke="none"/>
-    <path d="M38 54 Q50 60 62 54" />
-    <rect x="30" y="66" width="40" height="22" rx="6" fill="#0f8f88"/>
-    <line x1="22" y1="40" x2="12" y2="48"/>
-    <line x1="78" y1="40" x2="88" y2="48"/>
-    <line x1="40" y1="88" x2="40" y2="96"/>
-    <line x1="60" y1="88" x2="60" y2="96"/>
+  <g fill="none" stroke="#1c4aa0" stroke-width="2.6" stroke-linejoin="round" stroke-linecap="round">
+    <!-- antenna: stalk + curl -->
+    <path d="M48 23 C47 15 44 12 47 10"/>
+    <circle cx="50" cy="8.5" r="3"/>
+    <!-- head -->
+    <circle cx="48" cy="30" r="19" fill="#a6cdec"/>
+    <!-- head cheeks -->
+    <ellipse cx="34" cy="34" rx="4.6" ry="3.2" fill="#e5342b" stroke="none"/>
+    <ellipse cx="62" cy="34" rx="4.6" ry="3.2" fill="#e5342b" stroke="none"/>
+    <!-- head eyes -->
+    <path d="M43 25 V31" stroke-width="3.6"/>
+    <path d="M53 25 V31" stroke-width="3.6"/>
+    <!-- head smile -->
+    <path d="M42 37 Q48 43 55 37"/>
+    <!-- neck -->
+    <path d="M48 49 V53"/>
+    <!-- body -->
+    <rect x="29" y="53" width="40" height="29" rx="7" fill="#a6cdec"/>
+    <!-- body eyes -->
+    <path d="M43 60 V64" stroke-width="3.2"/>
+    <path d="M56 61 V65" stroke-width="3.2"/>
+    <!-- body cheeks -->
+    <ellipse cx="34" cy="71" rx="4" ry="2.8" fill="#e5342b" stroke="none"/>
+    <ellipse cx="64" cy="71" rx="4" ry="2.8" fill="#e5342b" stroke="none"/>
+    <!-- body smile + teeth -->
+    <path d="M40 70 Q49 77 58 70"/>
+    <path d="M45 72 V75" stroke-width="1.6"/>
+    <path d="M49 73 V76" stroke-width="1.6"/>
+    <path d="M53 72 V75" stroke-width="1.6"/>
+    <!-- left arm -->
+    <path d="M29 59 C22 62 19 67 19 73"/>
+    <!-- right arm raised + heart stalk -->
+    <path d="M69 59 C79 56 82 49 82 44 L83 33"/>
+    <!-- heart -->
+    <path d="M83 33 C78 28 74 23 78 20 C81 18 83 21 83 23 C83 21 85 18 88 20 C92 23 88 28 83 33 Z" fill="#e5342b"/>
+    <!-- legs -->
+    <path d="M41 82 L39 96"/>
+    <path d="M57 82 L59 96"/>
+    <!-- feet -->
+    <path d="M39 96 L45 95"/>
+    <path d="M59 96 L53 95"/>
   </g>
 </svg>`;
 const sprite = new Image();
@@ -334,14 +358,14 @@ const ctrls = [
   bind("size","size","size-v",0)
 ];
 
-// skin toggle — the McLuhan moment
+// skin toggle: the McLuhan moment
 const skinBtn = document.getElementById("skinBtn");
 const skinNote = document.getElementById("skinNote");
 skinBtn.addEventListener("click", () => {
   skinned = !skinned;
   if (skinned){
     skinBtn.textContent = "Back to the skeleton";
-    skinNote.innerHTML = "Same speed, same jump, same game — the <b>only</b> thing that changed is the drawing. That's a child's imagination, running on the machine underneath.";
+    skinNote.innerHTML = "Same speed, same jump, same game: the <b>only</b> thing that changed is the drawing. That's a child's imagination, running on the machine underneath.";
   } else {
     skinBtn.textContent = "Make it theirs →";
     skinNote.textContent = "Right now it's an anonymous gray box. A drawing is the only thing missing.";

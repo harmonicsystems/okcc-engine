@@ -34,6 +34,9 @@ jobs:
           cache-dependency-path: game-engine/package-lock.json
       - run: npm ci
       - run: npm run build
+      # The marketing one-pager (website/) ships alongside the game at /camp/.
+      # website/index.html stays the single source; we just copy it into dist.
+      - run: mkdir -p dist/camp && cp ../website/index.html dist/camp/index.html
       - uses: actions/upload-pages-artifact@v5
         with:
           path: game-engine/dist
