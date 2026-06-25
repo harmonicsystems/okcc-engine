@@ -51,10 +51,17 @@
   .demo .say b{color:#e8eaed;font-weight:600}
   .stage{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(250px,1fr);gap:18px;align-items:start}
   @media (max-width:780px){.stage{grid-template-columns:1fr}}
-  .screen{background:#000;border-radius:14px;overflow:hidden;border:1px solid #000}
-  canvas{display:block;width:100%;height:auto;background:var(--machine);touch-action:none}
-  .screen .hint{font-family:var(--mono);font-size:12px;color:#7e828b;padding:9px 14px;border-top:1px solid #26282d;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .screen{position:relative;background:#000;border-radius:14px;overflow:hidden;border:1px solid #000}
+  canvas{display:block;position:relative;z-index:1;width:100%;height:auto;background:var(--machine);touch-action:none}
+  .screen.themed canvas{background:transparent}
+  /* the kid background: preloaded, revealed when the demo is skinned */
+  .screen .bg{position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(0,0,0,.28),rgba(0,0,0,.28)),url('assets/demo-bg.jpg');background-size:cover;background-position:center;opacity:0;transition:opacity .45s ease;pointer-events:none}
+  .screen.themed .bg{opacity:1}
+  .screen .hint{position:relative;z-index:1;background:#000;font-family:var(--mono);font-size:12px;color:#7e828b;padding:9px 14px;border-top:1px solid #26282d;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   .screen .hint b{color:#c9ccd2;font-weight:500}
+  /* Super-Stories logo lockups (graceful: alt text shows if the file is absent) */
+  .ss-logo{height:34px;width:auto;vertical-align:middle}
+  .partner .ss-logo{height:30px}
 
   .panel{background:#fff;color:var(--ink);border-radius:14px;padding:18px}
   .panel h3{font-family:var(--display);font-size:15px;margin:0 0 2px}
@@ -112,7 +119,7 @@
 <div class="wrap">
   <nav>
     <div class="brand">Harmonic Systems<small>Accessible Information</small></div>
-    <div class="partner">a workshop with Super-Stories</div>
+    <div class="partner">a workshop with <img class="ss-logo" src="assets/super-stories-logo.png" alt="Super-Stories"></div>
   </nav>
 
   <section class="hero">
@@ -130,6 +137,7 @@
     <p class="say">Every mechanic is here: but no identity. Move with the arrow keys, collect the dots. Then drag a dial and watch a <b>number</b> change how it moves. Same gray game, every time… until you press the button.</p>
     <div class="stage">
       <div class="screen">
+        <div class="bg" aria-hidden="true"></div>
         <canvas id="game" width="660" height="380"></canvas>
         <div class="hint">
           <span><b>←</b> <b>→</b> move &nbsp; <b>↑</b> / <b>space</b> jump</span>
@@ -191,7 +199,7 @@
   <div class="wrap row">
     <div>
       <div class="brand" style="font-family:var(--display);font-weight:700;font-size:16px">Harmonic Systems</div>
-      <div>Interactive Art · with Super-Stories</div>
+      <div>Interactive Art · with <img class="ss-logo" src="assets/super-stories-logo.png" alt="Super-Stories"></div>
     </div>
   </div>
 </footer>
@@ -316,9 +324,11 @@ function update(){
 }
 function draw(){
   ctx.clearRect(0,0,W,H);
-  ctx.strokeStyle = "#1f2125"; ctx.lineWidth = 1;
-  for (let x=0;x<W;x+=44){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
-  for (let y=0;y<H;y+=44){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  if (!skinned){
+    ctx.strokeStyle = "#1f2125"; ctx.lineWidth = 1;
+    for (let x=0;x<W;x+=44){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+    for (let y=0;y<H;y+=44){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+  }
   ctx.fillStyle = "#3a3d44";
   for (const p of platforms) ctx.fillRect(p.x,p.y,p.w,p.h);
   for (const d of dots){
@@ -359,8 +369,10 @@ const ctrls = [
 // skin toggle: the McLuhan moment
 const skinBtn = document.getElementById("skinBtn");
 const skinNote = document.getElementById("skinNote");
+const screenEl = document.querySelector(".screen");
 skinBtn.addEventListener("click", () => {
   skinned = !skinned;
+  screenEl.classList.toggle("themed", skinned);
   if (skinned){
     skinBtn.textContent = "Back to the skeleton";
     skinNote.innerHTML = "Same speed, same jump, same game: the <b>only</b> thing that changed is the drawing. That's a child's imagination, running on the machine underneath.";

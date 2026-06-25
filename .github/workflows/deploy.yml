@@ -35,8 +35,8 @@ jobs:
       - run: npm ci
       - run: npm run build
       # The marketing one-pager (website/) ships alongside the game at /camp/.
-      # website/index.html stays the single source; we just copy it into dist.
-      - run: mkdir -p dist/camp && cp ../website/index.html dist/camp/index.html
+      # website/ stays the single source; copy it whole so index.html + assets/ ship.
+      - run: mkdir -p dist/camp && cp -R ../website/. dist/camp/
       - uses: actions/upload-pages-artifact@v5
         with:
           path: game-engine/dist
