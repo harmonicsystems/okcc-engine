@@ -1,8 +1,8 @@
 import Phaser from 'phaser';
 import { THEME, FONT, css } from '../config/theme';
 import { LEVELS } from '../config/assets';
-import { CHARACTERS } from '../config/characters';
 import { buildPlaceholders } from '../engine/placeholders';
+import { queueSkinLoads, bakeSkins } from '../engine/skins';
 
 // Boot: build every placeholder texture from roles.ts, load the level maps (and
 // any real art whose manifest src is set), then hand off to the Menu. This is
@@ -29,13 +29,13 @@ export class BootScene extends Phaser.Scene {
       if (lvl.scene.src) this.load.image(`scene:${lvl.key}`, lvl.scene.src);
       if (lvl.titleCard) this.load.image(`title:${lvl.key}`, lvl.titleCard);
     }
-    for (const ch of CHARACTERS) {
-      if (ch.src) this.load.spritesheet(`art:char:${ch.key}`, ch.src, { frameWidth: ch.size, frameHeight: ch.size });
-    }
+    // Real mural art (robot character, cat obstacles, KINDERHOOK banner).
+    queueSkinLoads(this);
   }
 
   create(): void {
-    buildPlaceholders(this);
+    bakeSkins(this); // claim the texture keys with real art first...
+    buildPlaceholders(this); // ...then generate the skeleton for everything else.
     this.scene.start('Menu');
   }
 }

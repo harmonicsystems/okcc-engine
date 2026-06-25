@@ -94,3 +94,27 @@ export const AUDIO = {
   win: null,
   music: null,
 } as const;
+
+// ---------------------------------------------------------------------
+//  Real mural art — the first drop-in (Super Stories Kinderhook mural, sliced).
+//  Each piece is loaded under the SAME texture key the placeholder uses, so the
+//  engine just paints it instead (engine/skins.ts bakes them to size). Every
+//  role without a skin here stays on its generated placeholder — the playable-
+//  skeleton invariant holds. Per-instance variety (two collectibles that look
+//  different) is a later extension; today it is one skin per role.
+// ---------------------------------------------------------------------
+
+/** Shared robot art — hue-rotated into the four characters (see characters.ts). */
+export const ROBOT_SRC = 'assets/characters/robot.png';
+
+/** Object-lane role skins: role key -> art path. Baked under TX.role(key). */
+export const SKINS: Partial<Record<string, string>> = {
+  hazard: 'assets/objects/cat-yellow.png',
+  groundPatroller: 'assets/objects/cat-pink.png',
+};
+
+/** The KINDERHOOK background label (painted-on-the-sky banner, behind every level). */
+export const BANNER = {
+  k: 'assets/scene/kinderhook-k.png',
+  word: 'assets/scene/kinderhook-inderhook.png',
+} as const;

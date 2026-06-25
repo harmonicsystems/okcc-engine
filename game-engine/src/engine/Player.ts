@@ -58,10 +58,22 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     const body = this.body as Phaser.Physics.Arcade.Body;
     body.setCollideWorldBounds(true);
-    // a slightly inset hitbox feels fairer than a pixel-exact one
-    const inset = Math.round(def.size * 0.14);
-    body.setSize(def.size - inset * 2, def.size - inset * 2);
-    body.setOffset(inset, inset);
+    // Size the hitbox from the actual texture (baked to size in Boot), so a tall
+    // mural robot collides at its torso while a square placeholder stays square.
+    const tw = this.width;
+    const th = this.height;
+    if (def.bodyFrac) {
+      const bf = def.bodyFrac;
+      const bw = Math.round(tw * bf.w);
+      const bh = Math.round(th * bf.h);
+      body.setSize(bw, bh);
+      body.setOffset(Math.round(tw * bf.cx - bw / 2), Math.round(th * bf.cy - bh / 2));
+    } else {
+      // a slightly inset hitbox feels fairer than a pixel-exact one
+      const inset = Math.round(tw * 0.14);
+      body.setSize(tw - inset * 2, th - inset * 2);
+      body.setOffset(inset, inset);
+    }
     body.setMaxVelocity(this.feel.speed, FALL_CAP);
     body.setGravityY(this.feel.gravity);
 

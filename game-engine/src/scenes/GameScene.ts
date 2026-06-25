@@ -98,6 +98,7 @@ export class GameScene extends Phaser.Scene {
 
     this.cameras.main.setBackgroundColor(THEME.machine);
     this.parallax = new Parallax(this, level.motif, this.cameras.main.width, this.cameras.main.height);
+    this.addBackdrop();
     this.juice = new Juice(this);
     this.sfx = new Sfx(this);
     this.controls = new Controls(this);
@@ -246,6 +247,38 @@ export class GameScene extends Phaser.Scene {
         })
         .setDepth(2);
     }
+  }
+
+  /**
+   * A faint, pinned "KINDERHOOK" banner painted across the sky — the same mural
+   * label behind every level. Sits in front of the gradient, behind the hills
+   * (depth -25), camera-pinned and low-alpha so it reads as a place, not chrome.
+   * Static (no motion) → reduced-motion safe; absent if the art didn't load.
+   */
+  private addBackdrop(): void {
+    if (!this.textures.exists('banner:k') || !this.textures.exists('banner:word')) return;
+    const viewW = this.cameras.main.width;
+    const H = 52;
+    const y = 76;
+    const gap = 7;
+    const k = this.add.image(0, 0, 'banner:k');
+    const word = this.add.image(0, 0, 'banner:word');
+    const kS = H / k.height;
+    const wS = H / word.height;
+    const kW = k.width * kS;
+    const wW = word.width * wS;
+    const startX = Math.round((viewW - (kW + gap + wW)) / 2);
+    const place = (img: Phaser.GameObjects.Image, x: number, scale: number): void => {
+      img
+        .setOrigin(0, 0.5)
+        .setScale(scale)
+        .setPosition(x, y)
+        .setScrollFactor(0)
+        .setDepth(-25)
+        .setAlpha(0.22);
+    };
+    place(k, startX, kS);
+    place(word, startX + kW + gap, wS);
   }
 
   // ------------------------------------------------------------------

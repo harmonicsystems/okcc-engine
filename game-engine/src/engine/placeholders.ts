@@ -53,86 +53,65 @@ function bake(
 }
 
 // ---- platform tiles (32x32, tiled by the factory) -------------------
-// Each carries a baked motion glyph so behavior reads without color.
+// Flat body + one lighter top edge (the "stand on top" affordance) + a single
+// minimal motion glyph, so behavior reads by shape + motion, not color alone.
 function drawPlatformTile(g: Phaser.GameObjects.Graphics, role: Role): void {
   const s = 32;
   const c = role.color;
-  // body + a lighter top edge ("stand on top") + a darker base
   g.fillStyle(c, 1);
-  if (role.shape === 'pad') {
-    g.fillRoundedRect(1, 4, s - 2, s - 6, 7);
-  } else {
-    g.fillRect(0, 0, s, s);
-  }
-  g.fillStyle(lighten(c, 22), 1);
-  g.fillRect(0, 0, s, 4);
-  g.fillStyle(darken(c, 18), 1);
-  g.fillRect(0, s - 3, s, 3);
+  if (role.shape === 'pad') g.fillRoundedRect(1, 5, s - 2, s - 8, 8);
+  else g.fillRect(0, 0, s, s);
+  g.fillStyle(lighten(c, 26), 1);
+  if (role.shape === 'pad') g.fillRoundedRect(1, 5, s - 2, 5, 4);
+  else g.fillRect(0, 0, s, 4);
 
-  const glyph = lighten(c, 36);
-  const shadow = darken(c, 28);
-  g.lineStyle(2, glyph, 0.95);
+  const glyph = darken(c, 32);
+  g.lineStyle(2.5, glyph, 0.92);
   switch (role.motion) {
-    case 'oneway': {
-      // perforated underside + up chevron: jump up through, land on top
-      g.lineStyle(2, shadow, 0.8);
-      for (let x = 3; x < s; x += 8) g.lineBetween(x, s - 6, x + 4, s - 6);
-      g.lineStyle(2, glyph, 0.95);
+    case 'oneway':
+      for (let x = 4; x < s; x += 8) g.lineBetween(x, s - 5, x + 4, s - 5);
       g.lineBetween(s / 2 - 5, 16, s / 2, 10);
       g.lineBetween(s / 2, 10, s / 2 + 5, 16);
       break;
-    }
-    case 'crumble': {
-      // cracks
-      g.lineStyle(2, shadow, 0.9);
-      g.lineBetween(8, 6, 13, 16);
-      g.lineBetween(13, 16, 9, 26);
-      g.lineBetween(22, 5, 19, 15);
-      g.lineBetween(19, 15, 24, 27);
+    case 'crumble':
+      g.lineBetween(9, 8, 13, 17);
+      g.lineBetween(13, 17, 10, 26);
+      g.lineBetween(21, 7, 19, 16);
+      g.lineBetween(19, 16, 23, 26);
       break;
-    }
-    case 'flow': {
-      // right-pointing chevrons (a current)
-      for (let x = 2; x < s; x += 12) {
+    case 'flow':
+      for (let x = 3; x < s; x += 11) {
         g.lineBetween(x, 11, x + 6, 16);
         g.lineBetween(x + 6, 16, x, 21);
       }
       break;
-    }
-    case 'carry-x': {
-      // left-right arrows
+    case 'carry-x':
       g.lineBetween(6, 16, 26, 16);
       g.lineBetween(6, 16, 11, 11);
       g.lineBetween(6, 16, 11, 21);
       g.lineBetween(26, 16, 21, 11);
       g.lineBetween(26, 16, 21, 21);
       break;
-    }
-    case 'lift-y': {
-      // up-down arrows
+    case 'lift-y':
       g.lineBetween(16, 6, 16, 26);
       g.lineBetween(16, 6, 11, 11);
       g.lineBetween(16, 6, 21, 11);
       g.lineBetween(16, 26, 11, 21);
       g.lineBetween(16, 26, 21, 21);
       break;
-    }
-    case 'launch': {
-      // spring coil hint
-      g.lineBetween(8, 24, 13, 12);
-      g.lineBetween(13, 12, 18, 24);
-      g.lineBetween(18, 24, 23, 12);
+    case 'launch':
+      g.lineBetween(9, 24, 16, 11);
+      g.lineBetween(16, 11, 23, 24);
       break;
-    }
-    default: {
-      // static: a quiet seam so the tile isn't a flat void
-      g.lineStyle(1, shadow, 0.5);
-      g.lineBetween(0, 16, s, 16);
-    }
+    default:
+      g.lineStyle(1.5, glyph, 0.4);
+      g.lineBetween(3, 16, s - 3, 16);
   }
 }
 
-// ---- object-lane sprites -------------------------------------------
+// ---- object-lane sprites --------------------------------------------
+// Basic, iconographic shapes in the spirit of the role-card legend: one clean
+// shape per role + a single glyph. Legible by shape + motion, color reinforces.
 function drawObject(g: Phaser.GameObjects.Graphics, role: Role): void {
   const { w, h } = role.frame;
   const c = role.color;
@@ -141,117 +120,96 @@ function drawObject(g: Phaser.GameObjects.Graphics, role: Role): void {
 
   switch (role.key) {
     case 'collectible': {
-      // a little gear/coin so the spin reads
-      g.fillStyle(darken(c, 20), 1);
-      for (let i = 0; i < 8; i++) {
-        const a = (i / 8) * Math.PI * 2;
-        g.fillCircle(cx + Math.cos(a) * (cx - 2), cy + Math.sin(a) * (cy - 2), 3);
-      }
+      // a coin with a plus — "a treat to grab"
       g.fillStyle(c, 1);
-      g.fillCircle(cx, cy, cx - 4);
-      g.fillStyle(lighten(c, 30), 1);
-      g.fillCircle(cx, cy, cx - 9);
-      g.fillStyle(darken(c, 15), 1);
-      g.fillCircle(cx, cy, 3);
+      g.fillCircle(cx, cy, cx - 2);
+      g.fillStyle(THEME.panel, 1);
+      const t = 2.4;
+      const r = (cx - 2) * 0.5;
+      g.fillRect(cx - t, cy - r, t * 2, r * 2);
+      g.fillRect(cx - r, cy - t, r * 2, t * 2);
       break;
     }
     case 'hazard': {
-      // a row of spikes
+      // one warning triangle with a bang — "hurts, never moves"
       g.fillStyle(c, 1);
-      const n = 3;
-      const bw = w / n;
-      for (let i = 0; i < n; i++) {
-        const x0 = i * bw;
-        g.fillTriangle(x0, h - 2, x0 + bw / 2, 4, x0 + bw, h - 2);
-      }
-      g.fillStyle(lighten(c, 25), 1);
-      for (let i = 0; i < n; i++) {
-        const x0 = i * bw;
-        g.fillTriangle(x0 + bw / 2 - 2, h - 2, x0 + bw / 2, 8, x0 + bw / 2 + 2, h - 2);
-      }
+      g.fillTriangle(2, h - 3, cx, 4, w - 2, h - 3);
+      g.fillStyle(THEME.white, 1);
+      g.fillRect(cx - 1.5, h * 0.36, 3, h * 0.26);
+      g.fillCircle(cx, h * 0.78, 2);
       break;
     }
     case 'groundPatroller': {
+      // a rounded face + eyes + a side-to-side arrow — "walks a path"
       g.fillStyle(c, 1);
-      g.fillRoundedRect(2, 4, w - 4, h - 6, 8);
-      // feet
-      g.fillStyle(darken(c, 25), 1);
-      g.fillRect(6, h - 4, 8, 4);
-      g.fillRect(w - 14, h - 4, 8, 4);
-      // angry eyes
+      g.fillRoundedRect(3, 2, w - 6, h - 10, 9);
       g.fillStyle(THEME.white, 1);
-      g.fillCircle(w * 0.36, h * 0.42, 4);
-      g.fillCircle(w * 0.64, h * 0.42, 4);
+      g.fillCircle(w * 0.38, h * 0.4, 3.5);
+      g.fillCircle(w * 0.62, h * 0.4, 3.5);
       g.fillStyle(THEME.ink, 1);
-      g.fillCircle(w * 0.36, h * 0.44, 2);
-      g.fillCircle(w * 0.64, h * 0.44, 2);
+      g.fillCircle(w * 0.38, h * 0.4, 1.8);
+      g.fillCircle(w * 0.62, h * 0.4, 1.8);
+      const my = h - 5;
+      g.lineStyle(2, darken(c, 28), 0.95);
+      g.lineBetween(w * 0.3, my, w * 0.7, my);
+      g.lineBetween(w * 0.3, my, w * 0.3 + 4, my - 3);
+      g.lineBetween(w * 0.3, my, w * 0.3 + 4, my + 3);
+      g.lineBetween(w * 0.7, my, w * 0.7 - 4, my - 3);
+      g.lineBetween(w * 0.7, my, w * 0.7 - 4, my + 3);
       break;
     }
     case 'airPatroller': {
-      // a flyer: diamond body + wings
-      g.fillStyle(lighten(c, 18), 1);
-      g.fillTriangle(0, cy, cx, cy - 6, cx, cy + 6); // left wing
-      g.fillTriangle(w, cy, cx, cy - 6, cx, cy + 6); // right wing
+      // a rounded face + eyes + a wavy line — "flies a path"
       g.fillStyle(c, 1);
-      g.fillPoints(
-        [
-          { x: cx, y: cy - h / 2 + 2 },
-          { x: cx + 9, y: cy },
-          { x: cx, y: cy + h / 2 - 2 },
-          { x: cx - 9, y: cy },
-        ],
-        true,
-      );
+      g.fillRoundedRect(3, 2, w - 6, h - 9, 9);
       g.fillStyle(THEME.white, 1);
-      g.fillCircle(cx, cy - 2, 3);
+      g.fillCircle(w * 0.38, h * 0.42, 3.2);
+      g.fillCircle(w * 0.62, h * 0.42, 3.2);
+      g.fillStyle(THEME.ink, 1);
+      g.fillCircle(w * 0.38, h * 0.42, 1.6);
+      g.fillCircle(w * 0.62, h * 0.42, 1.6);
+      const wy = h - 5;
+      g.lineStyle(2, darken(c, 26), 0.95);
+      g.lineBetween(w * 0.28, wy, w * 0.42, wy - 3);
+      g.lineBetween(w * 0.42, wy - 3, w * 0.56, wy);
+      g.lineBetween(w * 0.56, wy, w * 0.7, wy - 3);
       break;
     }
     case 'bouncePad': {
-      g.fillStyle(darken(c, 20), 1);
-      g.fillRect(4, h - 6, w - 8, 6); // base
+      // a pad + up chevrons — "land on it = launch up"
       g.fillStyle(c, 1);
-      g.fillRoundedRect(2, 2, w - 4, h - 8, 8); // cushion
-      g.fillStyle(lighten(c, 30), 1);
-      // up arrows
-      for (let x = 10; x < w - 6; x += 18) {
-        g.fillTriangle(x, 14, x + 6, 6, x + 12, 14);
+      g.fillRoundedRect(2, 4, w - 4, h - 6, 7);
+      g.fillStyle(lighten(c, 28), 1);
+      g.fillRoundedRect(2, 4, w - 4, 5, 4);
+      g.lineStyle(2.5, darken(c, 30), 0.95);
+      for (let x = 12; x < w - 10; x += 18) {
+        g.lineBetween(x, 16, x + 6, 9);
+        g.lineBetween(x + 6, 9, x + 12, 16);
       }
       break;
     }
     case 'goal': {
-      // a flag on a pole — unmistakable "finish"
-      g.fillStyle(THEME.box, 1);
-      g.fillRect(8, 4, 4, h - 6); // pole
+      // a clean flag — "reach it to win"
+      g.fillStyle(THEME.boxInk, 1);
+      g.fillRect(9, 4, 3, h - 6); // pole
       g.fillStyle(c, 1);
-      g.fillPoints(
-        [
-          { x: 12, y: 6 },
-          { x: w - 4, y: 16 },
-          { x: 12, y: 30 },
-        ],
-        true,
-      );
-      g.fillStyle(darken(c, 22), 1);
-      g.fillRect(4, h - 6, 16, 4); // base
+      g.fillTriangle(12, 6, w - 4, 15, 12, 26); // flag
+      g.fillStyle(darken(c, 20), 1);
+      g.fillRect(5, h - 6, 14, 4); // base
       break;
     }
     case 'speedPower': {
-      // a glowing orb with a bright core (the prototype's blue speed orb)
-      g.fillStyle(darken(c, 24), 1);
-      g.fillCircle(cx, cy, cx - 1);
+      // a plain orb with a bright core
       g.fillStyle(c, 1);
-      g.fillCircle(cx, cy, cx - 4);
-      g.fillStyle(0xffffff, 1);
-      g.fillCircle(cx, cy, Math.max(3, cx * 0.32));
+      g.fillCircle(cx, cy, cx - 2);
+      g.fillStyle(THEME.white, 1);
+      g.fillCircle(cx, cy, Math.max(3, cx * 0.34));
       break;
     }
     case 'starPower': {
-      g.fillStyle(darken(c, 20), 1);
-      g.fillCircle(cx, cy, cx - 1);
+      // a plain star
       g.fillStyle(c, 1);
-      g.fillPoints(starPoints(cx, cy, cx - 3, (cx - 3) * 0.45), true);
-      g.fillStyle(lighten(c, 32), 1);
-      g.fillPoints(starPoints(cx, cy, (cx - 3) * 0.55, (cx - 3) * 0.25), true);
+      g.fillPoints(starPoints(cx, cy, cx - 2, (cx - 2) * 0.46), true);
       break;
     }
     default:
@@ -268,29 +226,23 @@ function drawCharacter(g: Phaser.GameObjects.Graphics, def: CharacterDef): void 
   const s = def.size;
   const body = THEME.box;
   const a = def.accent;
-  // antenna
-  g.fillStyle(darken(body, 10), 1);
-  g.fillRect(s / 2 - 1, 2, 2, 6);
+  // tiny antenna (accent)
   g.fillStyle(a, 1);
-  g.fillCircle(s / 2, 3, 3);
-  // body
+  g.fillRect(s / 2 - 1, 3, 2, 4);
+  g.fillCircle(s / 2, 3, 2.5);
+  // rounded body
   g.fillStyle(body, 1);
-  g.fillRoundedRect(3, 7, s - 6, s - 12, 9);
-  // visor (accent band)
-  g.fillStyle(a, 0.9);
-  g.fillRoundedRect(7, s * 0.3, s - 14, s * 0.22, 5);
-  // eyes
-  g.fillStyle(THEME.white, 1);
-  const eyeY = s * 0.41;
-  g.fillCircle(s * 0.38, eyeY, 4);
-  g.fillCircle(s * 0.62, eyeY, 4);
+  g.fillRoundedRect(4, 8, s - 8, s - 12, 9);
+  // two eyes + an accent smile
   g.fillStyle(THEME.ink, 1);
-  g.fillCircle(s * 0.38, eyeY, 2);
-  g.fillCircle(s * 0.62, eyeY, 2);
+  g.fillCircle(s * 0.4, s * 0.42, 3);
+  g.fillCircle(s * 0.6, s * 0.42, 3);
+  g.lineStyle(2, a, 1);
+  g.lineBetween(s * 0.38, s * 0.58, s * 0.62, s * 0.58);
   // feet
-  g.fillStyle(darken(body, 22), 1);
-  g.fillRect(s * 0.26, s - 6, s * 0.18, 4);
-  g.fillRect(s * 0.56, s - 6, s * 0.18, 4);
+  g.fillStyle(darken(body, 20), 1);
+  g.fillRect(s * 0.3, s - 5, s * 0.14, 4);
+  g.fillRect(s * 0.56, s - 5, s * 0.14, 4);
 }
 
 // ---- fx + hud textures ----------------------------------------------
