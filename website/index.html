@@ -55,13 +55,16 @@
   canvas{display:block;position:relative;z-index:1;width:100%;height:auto;background:var(--machine);touch-action:none}
   .screen.themed canvas{background:transparent}
   /* the kid background: preloaded, revealed when the demo is skinned */
-  .screen .bg{position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(0,0,0,.28),rgba(0,0,0,.28)),url('assets/demo-bg.jpg');background-size:cover;background-position:center;opacity:0;transition:opacity .45s ease;pointer-events:none}
+  .screen .bg{position:absolute;inset:0;z-index:0;background-image:linear-gradient(rgba(0,0,0,.28),rgba(0,0,0,.28)),url('background.png');background-size:cover;background-position:center;opacity:0;transition:opacity .45s ease;pointer-events:none}
   .screen.themed .bg{opacity:1}
   .screen .hint{position:relative;z-index:1;background:#000;font-family:var(--mono);font-size:12px;color:#7e828b;padding:9px 14px;border-top:1px solid #26282d;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
   .screen .hint b{color:#c9ccd2;font-weight:500}
   /* Super-Stories logo lockups (graceful: alt text shows if the file is absent) */
   .ss-logo{height:34px;width:auto;vertical-align:middle}
   .partner .ss-logo{height:30px}
+  /* logo PNG has a baked white bg: invisible on the white header, so on the dark
+     footer we seat it on a clean white chip rather than a raw white rectangle */
+  footer .ss-logo{height:28px;background:#fff;padding:4px 8px;border-radius:8px;box-sizing:content-box}
 
   .panel{background:#fff;color:var(--ink);border-radius:14px;padding:18px}
   .panel h3{font-family:var(--display);font-size:15px;margin:0 0 2px}
@@ -119,7 +122,7 @@
 <div class="wrap">
   <nav>
     <div class="brand">Harmonic Systems<small>Accessible Information</small></div>
-    <div class="partner">a workshop with <img class="ss-logo" src="assets/super-stories-logo.png" alt="Super-Stories"></div>
+    <div class="partner">a workshop with <img class="ss-logo" src="super-stories-logo.png" alt="Super-Stories"></div>
   </nav>
 
   <section class="hero">
@@ -199,7 +202,7 @@
   <div class="wrap row">
     <div>
       <div class="brand" style="font-family:var(--display);font-weight:700;font-size:16px">Harmonic Systems</div>
-      <div>Interactive Art · with <img class="ss-logo" src="assets/super-stories-logo.png" alt="Super-Stories"></div>
+      <div>Interactive Art · with <img class="ss-logo" src="super-stories-logo.png" alt="Super-Stories"></div>
     </div>
   </div>
 </footer>
