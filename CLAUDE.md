@@ -230,6 +230,14 @@ The only files that name specific art. `null` src → placeholder.
   overrides (a child can make their robot fast, floaty, or bouncy).
 - **levels** — one entry per Kinderhook location: a scene page, a Tiled map key, the object
   selection, and a title card.
+- **skins** (`SKINS` / `ROBOT_SRC` / `BANNER` in `assets.ts`) — the real-art drop-in. Each path is
+  loaded and baked, at the engine's expected size, into the SAME texture key the placeholder uses
+  (`engine/skins.ts`, baked in Boot *before* `buildPlaceholders`, whose `bake()` already skips keys
+  that exist — so real art wins and the skeleton fills the rest). The first mural art rides this:
+  the Super Stories robot kid is the player character (one drawing, hue-rotated into the four
+  robots), the two cat faces are the ground threats (`hazard` / `groundPatroller`), and
+  **KINDERHOOK** is a pinned, low-alpha sky banner behind every level. One skin per role today;
+  per-instance skins (two collectibles that look different) are the next extension.
 - **audio** — `null` → silent / WebAudio blip (audio is a future workshop).
 
 Only `config/*` and Tiled files should ever need editing to add a kid's content.
@@ -272,7 +280,8 @@ okcc-engine/                     # repo root
   website/ index.html             # marketing one-pager
   game-engine/                    # the playable engine — all build tooling lives here
     index.html  worksheets.html   package.json  tsconfig.json  vite.config.ts
-    public/ levels/ (Tiled .json per location)   # + assets/ for scanned drawings & audio
+    public/ levels/ (Tiled .json)  assets/ (characters/ objects/ scene/ — the sliced mural art)
+    scripts/ extract-mural-skins.mjs   # POC/transcript base64 -> public/assets/ PNGs
     src/
       main.ts                     # Phaser config + scene registration
       config/ roles.ts variables.ts characters.ts assets.ts theme.ts
@@ -281,13 +290,13 @@ okcc-engine/                     # repo root
         Player.ts Controls.ts     # the character controller (game feel) + input merge
         platforms/factory.ts      # data-driven makePlatform (the seven types)
         Collectible.ts Hazard.ts GroundPatroller.ts AirPatroller.ts BouncePad.ts Goal.ts
-        Powerup.ts Parallax.ts placeholders.ts juice.ts registry.ts sfx.ts
+        Powerup.ts Parallax.ts placeholders.ts skins.ts juice.ts registry.ts sfx.ts
       hud/Hud.ts
       worksheet/ worksheet.ts frame.ts robot.ts print.css   # printable paper bridge (Phase 2)
 
 # Future (Phase 2/3, not yet in repo):
 #   src/worksheet/ scene pages + title cards + QR   (the other worksheet kinds)
-#   scripts/ingest.ts                               (scan → crop → manifest)
+#   scripts/ingest.ts                               (scan worksheets → crop → manifest)
 ```
 
 ```
@@ -329,10 +338,15 @@ pages, title cards, QR codes, and proving one scanned drawing replaces its place
 
 **Phase 3 — the full game. (in progress)** All five Kinderhook levels ship as Tiled files — the
 teaching curve, one mechanic each: Super Stories (carts) → Park (bounce) → Bike Path (dodge) →
-Library (climb) → Garden (air). Power-ups (speed + invincibility) shipped in The Park. Remaining:
-secrets/deeper optional content, the kid-drawn title-card art, and per-level polish. Audio is its
-own later workshop concept — design it deliberately (recording kids needs consent + Super-Stories
-coordination).
+Library (climb) → Garden (air). Power-ups (speed + invincibility) shipped in The Park. **First
+real mural art is wired** (Super Stories Kinderhook mural, sliced via `scripts/extract-mural-
+skins.mjs`): the robot character (one drawing, hue-rotated ×4), the two cat obstacles, and the
+KINDERHOOK sky banner — proving the role-key drop-in seam end to end. The skeleton also got
+simpler (flatter, more iconographic placeholders). Remaining: secrets/deeper optional content,
+per-instance skins, the kid-drawn title-card art, and per-level polish. Audio is its own later
+workshop concept — design it deliberately (recording kids needs consent + Super-Stories
+coordination). **Publishing the mural publicly (GitHub Pages) is a Super-Stories consent +
+attribution conversation, not a licensing one** — the IP to handle with care is the children's art.
 
 ---
 
